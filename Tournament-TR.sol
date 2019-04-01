@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0 <0.6.0;
 
-contract Tournament {
+contract Tournament-TR {
 
     address public organizer; // Адрес организатора турнира
     address public winner; // Адрес победителя турнира
