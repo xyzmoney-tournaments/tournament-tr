@@ -346,7 +346,7 @@ There is no input parameters.
   * calls `onTermination` event;
   * returns;
 * if the reqested amount is non-zero and it does not exceed `availableFunds` then the function:
- * reduces `availableFunds` by the requested amount;
- * calls `onWithdraw` event;
- * transfers the required amount to the organizer's address;
- * updates `contractBalance`.
+  * reduces `availableFunds` by the requested amount;
+  * calls `onWithdraw` event;
+  * transfers the required amount to the organizer's address;
+  * updates `contractBalance`.
