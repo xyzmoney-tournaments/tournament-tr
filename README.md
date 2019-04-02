@@ -16,11 +16,11 @@ The contract is written in the Solidity language and intended for implementation
 
 **The tournament can have one of the following statuses:**
 
-* *NotTerminated* ⏤ is not complete (proceeds);
-* *LackOfPlayers* ⏤ is terminated due to lack of players;
-* *Cancelled* ⏤ is cancelled;
-* *NoWinner* ⏤ is terminated with no winner announced;
-* *Winner* ⏤ is terminated due to the winner announcement.
+* *NotTerminated* ⏤ the tournament is not complete (proceeds);
+* *LackOfPlayers* ⏤ the tournament is terminated due to lack of players;
+* *Cancelled* ⏤ the tournament is cancelled;
+* *NoWinner* ⏤ the tournament is terminated with no winner announced;
+* *Winner* ⏤ the tournament is terminated due to the winner announcement.
 
 During the contract creation the tournament is assigned the status of *NotTerminated*. When one of the reasons for termination further appears, the tournament is going irreversibly to the corresponding one of four alternative statuses of termination.
 
@@ -62,5 +62,40 @@ If after the registration deadline passed the number of players (variable `playe
 
 If after the registration deadline passed the number of players appears not less minimum number of players, the tournament is considered begun. To terminate the tournament, the organizer should either announce the winner by calling of `announceWinner` function (therefore the tournament is automatically given the status of *Winner*), or to terminate the tournament with no winner announced by calling `terminate` function with explicit assignment to the tournament of one of the statuses of *Cancelled* or *NoWinner*. The choice of the status is maid by the organizer depending on the reason of the winner absence. It is possible to terminate the tournament by the winner announcement not earlier than in 24 hours after the registration deadline passed. As opposed to it, it is possible to terminate the tournament with no winner announced even before the deadline.
 
-From the moment the tournament got the status of *Winner* only the winner can take away the prize by calling `takePrize` function which transfers the prize amount to the winner address. If the tournament has been terminated with no winner announced (i.e. with one of the statuses of *LackOfPlayers*, *Cancelled* or *NoWinner*), then all players can refund by calling of `takeMoneyBack` function.
+If the tournament has been terminated with no winner announced (i.e. with one of the statuses of *LackOfPlayers*, *Cancelled* or *NoWinner*), then all players can refund by calling of `takeMoneyBack` function.
+
+From the moment the tournament got the status of *Winner*, the winner can take away the prize by calling `takePrize` function which transfers the prize amount to the winner address. From the same moment the organizer can take away available funds (variable `availableFunds`) from the contract account by calling of `withdraw` function. Available funds are equal to the contract balance (variable `contractBalance`) provided that the winner took away the prize, otherwise the available funds will be reduced by the prize amount.
+
+## Contract variables
+
+**`organizer`** ⏤ address of the organizer. It is is initialized by the address of the constructor's caller during execution of the contract constructor.
+
+**`winner`** ⏤ address of the winner. It is assigned by the organizer at the end of the game in case of winner determination.
+
+**`minNumOfPlayers`** ⏤ minimum number of players. If after the registration deadline passed the number of players (variable `playersCounter`) appears less of `minNumOfPlayers` variable, the tournament automatically get the status of *LackOfPlayers*. The `minNumOfPlayers` variable is initialized during execution of the contract constructor.
+
+**`playersCounter`** ⏤ counter of players. Players are participants who enter into the tournament and does not unregister for it until the registration deadline.
+
+**`entranceFee`** ⏤ the amount of the entrance fee in Wei (1 Ether = 10^18 Wei). It is initialized during execution of the contract constructor.
+
+**`prizeFund`** ⏤ the amount of the prize fund in Wei. It is equal to the sum of all entrance fees of players.
+
+**`winnerShare`** ⏤ the winner's percentage share of the prize fund. It is initialized during execution of the contract.
+
+**`deadline`** ⏤ the registration deadline in the Unix time format. It is initialized during execution of the contract constructor.
+Afterwards it can be changed, but only once.
+
+**`contractBalance`** ⏤ the balance of the contract.
+
+**`availableFunds`** ⏤ the part of the contract account balance which is available to the organizer for withdrawal.
+
+**`status`** ⏤ current status of the tournament. Can accept one of the following values:
+
+* *NotTerminated* ⏤ the tournament is not complete (proceeds);
+* *LackOfPlayers* ⏤ the tournament is terminated due to lack of players;
+* *Cancelled* ⏤ the tournament is cancelled;
+* *NoWinner* ⏤ the tournament is terminated with no winner announced;
+* *Winner* ⏤ the tournament is terminated due to the winner announcement.
+
+Initial status of the tournament ⏤ *NotTerminated*.
 
