@@ -175,15 +175,15 @@ Such complex informativness is reached by that the counter has the sign: if the 
 * the entrance code should be 16-digit number;
 * the entrance code should be unique among entrance codes of players.
 
-**Execution steps:**
+**The fuction does:**
 
-* if the participant enters into the tournament for the first time then the function sets his (her) counter of entrances to 10 and add his (her) address to the list of entrants, else the function advances the counter forward;
-* the participant's entrance code is added to `entranceCodes` mapping;
-* the participant's address is added to `whoseEntryCode` mapping;
-* the counter of players (`playersCounter` variable) increases by 1;
-* the prize fund (`prizeFund` variable) increases by the entrance fee amount;
-* `onEnter` event is calling;
-* the contract balance (`contractBalance` variable) is updated.
+* if the participant enters into the tournament for the first time then the function sets his (her) counter of entrances to 10 and adds his (her) address to the list of entrants, else the function advances the counter forward;
+* adds the participant's entrance code to `entranceCodes` mapping;
+* adds the participant's address to `whoseEntryCode` mapping;
+* increases `playersCounter` by 1;
+* increases `prizeFund` by the entrance fee amount;
+* calls `onEnter` event;
+* updates `contractBalance`.
 
 ### `unregister`
 
@@ -199,15 +199,15 @@ There is no input parameters.
 * one can unregister only while the registration deadline not passed;
 * the unregistering person's address should be in the list of players.
 
-**Execution steps:**
+**The fuction does:**
 
-* the function inverts the sign of the participant's counter of entrances;
-* the participant's  entrance code is deleted from `whoseEntryCode` mapping;
-* the counter of players (`playersCounter` variable) decreases by 1;
-* the prize fund (`prizeFund` variable) decreases by the entrance fee amount;
-* `onUnregister` event is calling;
-* the function transfers the entrance fee amount to the participant's address;
-* the contract balance (`contractBalance` variable) is updated.
+* inverts the sign of the participant's counter of entrances;
+* deletes the participant's  entrance code from `whoseEntryCode` mapping;
+* decreases `playersCounter` by 1;
+* decreases `prizeFund` by the entrance fee amount;
+* calls `onUnregister` event;
+* transfers the entrance fee amount to the participant's address;
+* updates `contractBalance`.
 
 ### `changeDeadline`
 
@@ -228,11 +228,11 @@ There is no input parameters.
 * current value of the deadline must differ from the new one;
 * the deadline can be shifted either forward no more than for 72 hours, or backward so there are not less than 24 hours between present time and the new deadline.
 
-**Execution steps:**
+**The fuction does:**
 
-* the function stores the input argument into `deadline` variable;
-* `deadlineIsChanged` variable is set to *true*;
-* `onDeadlineChange` event is calling.
+* stores the input argument into `deadline`;
+* set `deadlineIsChanged` to *true*;
+* calls `onDeadlineChange` event.
 
 ### `announceWinner`
 
@@ -251,12 +251,12 @@ There is no input parameters.
 * the winner can be announced not earlier than in 24 hours after the registration deadline passed;
 * the winner must be one of the players.
 
-**Execution steps:**
+**The fuction does:**
 
-* the function updates `availableFunds` variable;
-* the function stores the input argument into `winner` variable;
-* `status` variable is set to the status of *Winner*;
-* `onWinnerAnnounce` event is calling.
+* updates `availableFunds`;
+* stores the input argument into `winner`;
+* set `status` to *Winner*;
+* calls `onWinnerAnnounce` event.
 
 ### `terminate`
 
@@ -274,10 +274,10 @@ There is no input parameters.
 * current status of the tournament must be *NotTerminated*;
 * the new status must be *Cancelled* or *NoWinner*.
 
-**Execution steps:**
+**The fuction does:**
 
-* the function stores the input argument into `status` variable;
-* `onTermination` event is calling.
+* stores the input argument into `status`;
+* calls `onTermination` event.
 
 ### `takePrize`
 
@@ -293,15 +293,60 @@ There is no input parameters.
 * only the winner can take away the prize;
 * the prize is paid only once (`prizeIsPaid` variable must be equal to *false*).
 
-**Execution steps:**
+**The fuction does:**
 
-* the function calculates the prize amount by the formula:
+* calculates the prize amount by the formula:
 
-    _prize = prizeFund * winnerShare / 100,
+    _prize = prizeFund * winnerShare / 100
 
-where `prizeFund` is the prize fund amount, and `winnerShare` is a percentage share of the winner.
+* sets `prizeIsPaid` to *true*;
+* calls `onPrizePayment` event;
+* transfers the prize amount to the winner's address;
+* updates `contractBalance`.
 
-* function sets `prizeIsPaid` variable to *true*;
-* `onPrizePayment` event is calling;
-* the function transfers the prize amount to the winner's address;
-* the fuction updates `contractBalance` variable.
+### `refund`
+
+**Purpose:**
+
+* transters to players their entrance fees if the tournament has the status of *LackOfPlayers*, *Cancelled* or *NoWinner*.
+
+There is no input parameters.
+
+**Requirements:**
+
+* only the players can refund;
+* only the players can refund who did not make it earlier (the player's counter of entrances must be a multiple of 10);
+* current status of the tournament must be one of *LackOfPlayers*, *Cancelled* or *NoWinner*.
+
+**The fuction does:**
+
+* increases the player's counter of entrances by 1;
+* calls `onRefund` event;
+* transfers the enreance fee to the player's address;
+* updates `contractBalance`.
+
+### `withdraw`
+
+**Purpose:**
+
+* assigns the torunament with the status *LackOfPlayers* if appropriate, or transfers the requested amount to the organizer if the amount is non-zero and it does not exceed the available funds.
+
+**Input parameter:**
+
+* withdrawal amount.
+
+**Requirements:**
+
+* only the organizer is authorized to perform the function.
+
+**The fuction does:**
+
+* if the registration deadline passed, current status is *NotTerminated*, and `playersCounter` is less than `minNumOfPlayers` then the function:
+ * sets status to *LackOfPlayers*;
+ * calls `onTermination` event;
+ * returns;
+* if the reqested amount is non-zero and it does not exceed `availableFunds` then the function:
+ * reduces `availableFunds` by the requested amount;
+ * calls `onWithdraw` event;
+ * transfers the required amount to the organizer's address;
+ * updates `contractBalance`.
