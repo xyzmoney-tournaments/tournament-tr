@@ -112,12 +112,12 @@ Initial status of the tournament ⏤ *NotTerminated*.
 Counter of entrances allows to define:
 
 * how many times this entrant entered into the tournament;
-* whether there is the entrant is a player at present or he (she) has unregistered for the tournament;
+* whether the entrant is a player at the moment or he (she) has unregistered for the tournament;
 * whether the player has refunded if the tournament has terminated with no winner announced.
 
 Such complex informativness is reached by that the counter has the sign: if the counter value is positive then the entrant is among the players of the tournament, else if it is negative then the entrant has unregistered for the tournament. The counter's step is 10. At the first entrance of the participant his (her) counter becomes 10. If after that the participant unregistered for the tournament, the counter inverts its sign. If then the participant enter again, the counter becomes 20, and so on. To put it briefly, at consequent entrances and unregisterings the counter will change in the following sequence: 10, -10, 20, -20, 30, … . If the tournament has terminated with no winner announced and the player has refund after that, his or her counter of entrances increases by 1 in addition.
 
-**`whoseEntryCode`** ⏤ mapping <entrant's entrance code> => <entrant's address>. It is used for fast checking of the entered code ⏤ the new code should not be present among the entrance codes of other players (at the same time presence of the code among entrance codes of participants who already has unregistered for the tournament is allowed). On the participant's unregistering his or her entrance code is removed from the mapping thus releasing this code for new enter.
+**`whoseEntryCode`** ⏤ mapping <entrant's entrance code> => <entrant's address>. It is used for fast checking of the entered code ⏤ the new code should not be present among the entrance codes of players (at the same time presence of the code among entrance codes of participants who already has unregistered is allowed). On the participant's unregistering his or her entrance code is removed from the mapping thus releasing this code for new enter.
 
 ## Events
 
@@ -148,8 +148,54 @@ Such complex informativness is reached by that the counter has the sign: if the 
 * the address of the player who took away the prize;
 * amount of the prize.
 
-**`onTermination`** ⏤ is called after the tournament has been assigned with one of the statuses of *LackOfPlayers*, *Cancelled* or *NoWinner*. The status of *LackOfPlayers* can be assigned in the function `withdraw`, the statuses of *Cancelled* and *NoWinner* ⏤ in the function `terminate`. With this event the new status of the tournament is logged.
+**`onTermination`** ⏤ is called after the tournament has been assigned with one of the statuses of *LackOfPlayers*, *Cancelled* or *NoWinner*. The status of *LackOfPlayers* can be assigned in `withdraw` function, the statuses of *Cancelled* and *NoWinner* ⏤ in `terminate` function. With this event the new status of the tournament is logged.
 
 **`onRefund`** ⏤ is called after each refund in case of the tournament termination with no winner announced (see the description of `refund` function). With this event the address of the player who has refunded is logged.
 
 **`onWithdraw`** ⏤ is called after each withdrawal from the contract balance by the organizer (see the description of `withdraw` function). With this event the withdrawal amount is logged.
+
+## Functions
+
+### `enter`
+
+**Purpose:**
+
+* accepts entrance fees from the persons wishing to enter (re-enter) into the tournament.
+
+**Input parameter:**
+
+* entrance code provided from the organizer or from an agent.
+
+**Requirements:**
+
+* one can enter into the tournament only at its current status *NotTerminated*;
+* one can enter only while the registration deadline not passed;
+* the entering person should not be in the list of the tournament players (i.e. either this person enters for the first time or he or she should unregister before this entering);
+* the deposit amount should be precisely equal to the entrance fee;
+* the entrance code should be 16-digit number;
+* the entrance code should be unique among entrance codes of players.
+
+**Steps:**
+
+* the function advances this participant's counter of entrances and stores his (her) entrance code. Besides, if the participant enters into the tournament for the first time then his (her) address is added to the list of entrants;
+* the participant's address is added to `whoseEntryCode` mapping;
+* the counter of players (`playersCounter` variable) increases by 1;
+* prize fund (`prizeFund` variable) increases by the size of the entrance fee;
+* `onEnter` event is calling;
+* the contract balance (`contractBalance` variable) is updated.
+
+### `unregister`
+
+**Purpose:**
+
+* transfers the entrance fee amount to the participant's address and excludes him (her) from the list of players.
+
+There is no input parameters.
+
+**Requirements:**
+
+    NotTerminated can leave a tournament only at its current status;
+    the output should be made of a tournament until the end of reception of contributions;
+    the person which caused function should be registered as the player.
+
+After successful passing of entrance conditions (that means that the person which caused function is a player) function inverts the sign of the counter of number of inputs of the leaving participant and nullifies value on a key <the input code of this participant> in compliance of whoseEntryCode. Further the counter of players (playersCounter variable) decreases by 1, and prize fund ⏤ by the size of an entrance fee. Then onLeaving event publishing the address of this participant and new value of the counter of number of its inputs in a tournament is generated. At the end function transfers the contribution amount to this participant and updates balance of the contract (contractBalance variable).
