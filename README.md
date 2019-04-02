@@ -168,19 +168,20 @@ Such complex informativness is reached by that the counter has the sign: if the 
 
 **Requirements:**
 
-* one can enter into the tournament only at its current status *NotTerminated*;
+* current status of the tournament must be *NotTerminated*;
 * one can enter only while the registration deadline not passed;
-* the entering person should not be in the list of the tournament players (i.e. either this person enters for the first time or he or she should unregister before this entering);
+* the entering person's address should not be in the list of players (i.e. either this person enters for the first time or he or she should unregister before this entering);
 * the deposit amount should be precisely equal to the entrance fee;
 * the entrance code should be 16-digit number;
 * the entrance code should be unique among entrance codes of players.
 
-**Steps:**
+**Execution steps:**
 
-* the function advances this participant's counter of entrances and stores his (her) entrance code. Besides, if the participant enters into the tournament for the first time then his (her) address is added to the list of entrants;
+* if the participant enters into the tournament for the first time then the function sets his (her) counter of entrances to 10 and add his (her) address to the list of entrants, else the function advances the counter forward;
+* the participant's entrance code is added to `entranceCodes` mapping;
 * the participant's address is added to `whoseEntryCode` mapping;
 * the counter of players (`playersCounter` variable) increases by 1;
-* prize fund (`prizeFund` variable) increases by the size of the entrance fee;
+* the prize fund (`prizeFund` variable) increases by the entrance fee amount;
 * `onEnter` event is calling;
 * the contract balance (`contractBalance` variable) is updated.
 
@@ -194,8 +195,42 @@ There is no input parameters.
 
 **Requirements:**
 
-    NotTerminated can leave a tournament only at its current status;
-    the output should be made of a tournament until the end of reception of contributions;
-    the person which caused function should be registered as the player.
+* current status of the tournament must be *NotTerminated*;
+* one can unregister only while the registration deadline not passed;
+* the unregistering person's address should be in the list of players.
 
-After successful passing of entrance conditions (that means that the person which caused function is a player) function inverts the sign of the counter of number of inputs of the leaving participant and nullifies value on a key <the input code of this participant> in compliance of whoseEntryCode. Further the counter of players (playersCounter variable) decreases by 1, and prize fund ⏤ by the size of an entrance fee. Then onLeaving event publishing the address of this participant and new value of the counter of number of its inputs in a tournament is generated. At the end function transfers the contribution amount to this participant and updates balance of the contract (contractBalance variable).
+**Execution steps:**
+
+* the function inverts the sign of the participant's counter of entrances;
+* the participant's  entrance code is deleted from `whoseEntryCode` mapping;
+* the counter of players (`playersCounter` variable) decreases by 1;
+* the prize fund (`prizeFund` variable) decreases by the entrance fee amount;
+* `onUnregister` event is calling;
+* the function transfers the entrance fee amount to the participant's address;
+* the contract balance (`contractBalance` variable) is updated.
+
+### `changeDeadline`
+
+**Purpose:**
+
+* changes the registration deadline.
+
+**Input parameter:**
+
+* new value of the deadline.
+
+**Requirements:**
+
+* only the organizer is authorized to perform the function;
+* current status of the tournament must be *NotTerminated*;
+* it is possible to execute the function only while the registration deadline not passed;
+* the deadline can be changed only once (`deadlineIsChanged` variable must be equal to *false*);
+* current value of the deadline must differ from the new one;
+* the deadline can be shifted either forward no more than for 72 hours, or backward so there are not less than 24 hours between present time and the new deadline.
+
+**Execution steps:**
+
+* the function changes stores the input value into `deadline` variable;
+* `deadlineIsChanged` variable is set to *true*;
+* `onDeadlineChange` event is calling.
+
