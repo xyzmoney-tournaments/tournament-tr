@@ -38,7 +38,7 @@ It should be noted that `now` does not give current astronomical time. It is jus
 
 >The current block timestamp must be strictly larger than the timestamp of the last block, but the only guarantee is that it will be somewhere between the timestamps of two consecutive blocks in the canonical chain.
 
-## Typical scheme of the contract performance
+## Typical scheme of the contract implementation
 
 The creator of the contract executes the contract constructor which initializes the following parameters:
 
@@ -50,5 +50,5 @@ The creator of the contract executes the contract constructor which initializes 
 
 Herewith `organizer` variable is initialized by the address of the constructor's caller, and other variables are initialized by values of the same-name input parameters. Subsequently, registration deadline can be changed by the organizer only once, other variables are not subject to change.
 
-Before the registration starts, the organizer generates a set of the tables of unique entrance codes and then distributes them among the agents that invite participants. If the organizer invites participants directly, he or she uses one of these tables, like agents. By inviting a participant, the agent provides him with one of the available entrance codes. Once the code transferred to the participant is not subject to repeated transfer to other participant (though the participant who received this code has the right to enter it repeatedly at the subsequent inputs into a tournament). The code given to the participant cannot be re-given to another one, but the participant who received the code has the right to use it again while re-entering into the tournament.
+Before the registration starts, the organizer generates a set of tables with unique entrance codes and then distributes these tables among the agents that invite participants. If the organizer invites participants directly, he or she uses one of the tables, like agents. By inviting a participant, the agent provides him or her with one of the available entrance codes. The code given to the participant cannot be re-given to another one, but the participant who received the code has the right to use it again while re-entering into the tournament.
 
