@@ -223,14 +223,85 @@ There is no input parameters.
 
 * only the organizer is authorized to perform the function;
 * current status of the tournament must be *NotTerminated*;
-* it is possible to execute the function only while the registration deadline not passed;
+* it is allowed to execute the function only while the registration deadline not passed;
 * the deadline can be changed only once (`deadlineIsChanged` variable must be equal to *false*);
 * current value of the deadline must differ from the new one;
 * the deadline can be shifted either forward no more than for 72 hours, or backward so there are not less than 24 hours between present time and the new deadline.
 
 **Execution steps:**
 
-* the function changes stores the input value into `deadline` variable;
+* the function stores the input argument into `deadline` variable;
 * `deadlineIsChanged` variable is set to *true*;
 * `onDeadlineChange` event is calling.
 
+### `announceWinner`
+
+**Purpose:**
+
+* reports the winner address to the contract and assignes the tournament with the status of *Winner*.
+
+**Input parameter:**
+
+* the winner address.
+
+**Requirements:**
+
+* only the organizer is authorized to perform the function;
+* current status of the tournament must be *NotTerminated*;
+* the winner can be announced not earlier than in 24 hours after the registration deadline passed;
+* the winner must be one of the players.
+
+**Execution steps:**
+
+* the function updates `availableFunds` variable;
+* the function stores the input argument into `winner` variable;
+* `status` variable is set to the status of *Winner*;
+* `onWinnerAnnounce` event is calling.
+
+### `terminate`
+
+**Purpose:**
+
+* assignes the tournament with one of the statuses *Cancelled* or *NoWinner*.
+
+**Input parameter:**
+
+* the new status.
+
+**Requirements:**
+
+* only the organizer is authorized to perform the function;
+* current status of the tournament must be *NotTerminated*;
+* the new status must be *Cancelled* or *NoWinner*.
+
+**Execution steps:**
+
+* the function stores the input argument into `status` variable;
+* `onTermination` event is calling.
+
+### `takePrize`
+
+**Purpose:**
+
+* tranfers to the winner his or her share of the prize fund.
+
+There is no input parameters.
+
+**Requirements:**
+
+* current status of the tournament must be *Winner*;
+* only the winner can take away the prize;
+* the prize is paid only once (`prizeIsPaid` variable must be equal to *false*).
+
+**Execution steps:**
+
+* the function calculates the prize amount by the formula:
+
+    _prize = prizeFund * winnerShare / 100,
+
+where `prizeFund` is the prize fund amount, and `winnerShare` is a percentage share of the winner.
+
+* function sets `prizeIsPaid` variable to *true*;
+* `onPrizePayment` event is calling;
+* the function transfers the prize amount to the winner's address;
+* the fuction updates `contractBalance` variable.
