@@ -48,6 +48,7 @@ The creator of the contract executes the contract constructor which initializes 
 * the winner's percentage share of the prize fund (`winnerShare` variable);
 * participants registration deadline (`deadline` variable).
 
-Herewith `organizer` variable is initialized by the address of the constructor's caller, and other variables are initialized by values of the same-name input parameters. Further registration deadline can be changed by the organizer only once, other variables are not subject to change.
+Herewith `organizer` variable is initialized by the address of the constructor's caller, and other variables are initialized by values of the same-name input parameters. Subsequently, registration deadline can be changed by the organizer only once, other variables are not subject to change.
 
+Before the registration starts, the organizer generates a set of the tables with unique entrance codes and then distributes them among the agents that invite participants. If the organizer invites participants directly, he or she uses one of these tables, like agents. By inviting a participant, the agent provides him with one of the available entrance codes. Once the code transferred to the participant is not subject to repeated transfer to other participant (though the participant who received this code has the right to enter it repeatedly at the subsequent inputs into a tournament). The code given to the participant cannot be re-given to another one, but the participant who received the code has the right to use it again while re-entering into the tournament.
 
