@@ -342,9 +342,9 @@ There is no input parameters.
 **The fuction does:**
 
 * if the registration deadline passed, current status is *NotTerminated*, and `playersCounter` is less than `minNumOfPlayers` then the function:
- * sets status to *LackOfPlayers*;
- * calls `onTermination` event;
- * returns;
+  * sets status to *LackOfPlayers*;
+  * calls `onTermination` event;
+  * returns;
 * if the reqested amount is non-zero and it does not exceed `availableFunds` then the function:
  * reduces `availableFunds` by the requested amount;
  * calls `onWithdraw` event;
