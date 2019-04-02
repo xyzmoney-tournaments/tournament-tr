@@ -1,16 +1,16 @@
 # Smart contract Tournament-TR
 
-The contract is written in the Solidity language and intended for implementation on Ethereum. It contains function set for collecting and distribution of prize fund of a game tournament. The type of a game does not matter. The tournament should be organized by the following principle: the prize fund is the sum of entrance fees of players, the one winner receives the fixed share of the prize fund, the rest of the funds is taken away by the tournament organizer.
+The contract is written in the Solidity language and intended for implementation on Ethereum. It contains function set for collecting and distribution of prize fund of a game tournament. The type of a game does not matter. The tournament should be organized as follows: the prize fund is the sum of fixed entrance fees of players, the one winner receives the predefined share of the prize fund, the rest of the funds is taken away by the tournament organizer.
 
 **The contract contains functions of:**
 
 * control of the tournament statuses;
-* postponement of participants registration deadline;
 * entering (re-entering) into the tournament;
 * unregistering for the tournament with full refund;
+* postponement of entrants registration deadline;
 * withdrawal of prize amount by the winner;
 * withdrawal of balance of the tournament by its organizer after the winner announcement, minus the winner share;
-* full refund to players if the tournament has been terminated without the winner announcement.
+* full refund to players in case the tournament has been terminated with no winner announced.
 
 ## Statuses of the tournament
 
@@ -19,28 +19,28 @@ The contract is written in the Solidity language and intended for implementation
 * *NotTerminated* ⏤ is not complete (proceeds);
 * *LackOfPlayers* ⏤ is terminated due to lack of players;
 * *Cancelled* ⏤ is cancelled;
-* *NoWinner* ⏤ is terminated without the winner announcement;
+* *NoWinner* ⏤ is terminated with no winner announced;
 * *Winner* ⏤ is terminated due to the winner announcement.
 
-After the contract creation the tournament obtain the status of *NotTerminated* and then a tournament irreversibly turns, depending on the reason, into one of four alternative termination statuses.
+During the contract creation the tournament is assigned the status of *NotTerminated*. When one of the reasons for termination subsequently appears, the tournament is going irreversibly to the corresponding one of four alternative statuses of termination.
 
-The status of *LackOfPlayers* is established when after registration deadline passed the number of players appears less than initially set minimum number of players. The specified check is carried out by the `withdraw` function caused by the organizer.
+The status of *LackOfPlayers* is assigned when after registration deadline passed the number of players appears less than predefined minimum number of players. The due check is performed while executed `withdraw` function called by the organizer.
 
-Any of the statuses of *Cancelled* and *NoWinner* is established by the organizer by the `terminate` function. This function can be executed even before the registration deadline, and in this case entering stops ahead of schedule.
+Any of the statuses of *Cancelled* and *NoWinner* is assigned by the organizer by means of `terminate` function. The function can be executed even before the registration deadline passed, with immediate effect of entering (re-entering) and unregistering stop.
 
-The status of *Winner* is established during execution of the `announceWinner` function caused by the organizer for the winner announcement.
+The status of *Winner* is assigned during execution of `announceWinner` function called by the organizer in order to announce winner.
 
 ## About time representation in the contract
 
 Registration deadline (entryEndTime variable) and also `now` property used in the contract code as value of the current time have the [Unix time](https://en.wikipedia.org/wiki/Unix_time) format which is the number of seconds that have elapsed since 00:00:00, 1 January 1970, Coordinated Universal Time (UTC).
 
-It should be noted that `now` does not give current astronomical time. It is just alias of `block.timestamp` ⏤ timestamp of the current block. Therefore the "current" time is defined in the contract with some share of uncertainty. In the description of the [Solidity language](https://solidity.readthedocs.io/en/v0.5.6/units-and-global-variables.html#index-2) it is noted:
+It should be noted that `now` does not give current astronomical time. It is just alias of `block.timestamp` ⏤ the current block timestamp. Therefore the "current" time is defined in the contract with some share of uncertainty. In the description of the [Solidity language](https://solidity.readthedocs.io/en/v0.5.6/units-and-global-variables.html#index-2) it is noted:
 
 >The current block timestamp must be strictly larger than the timestamp of the last block, but the only guarantee is that it will be somewhere between the timestamps of two consecutive blocks in the canonical chain.
 
 ## Typical scheme of the contract performance
 
-The creator of the contract executes the contract constructor during which initializes the following parameters:
+The creator of the contract executes the contract constructor which initializes the following parameters:
 
 * address of the tournament organizer (`organizer` variable);
 * minimum number of players (`minNumOfPlayers` variable);
