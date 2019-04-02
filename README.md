@@ -22,7 +22,7 @@ The contract is written in the Solidity language and intended for implementation
 * *NoWinner* ⏤ is terminated with no winner announced;
 * *Winner* ⏤ is terminated due to the winner announcement.
 
-During the contract creation the tournament is assigned the status of *NotTerminated*. When one of the reasons for termination subsequently appears, the tournament is going irreversibly to the corresponding one of four alternative statuses of termination.
+During the contract creation the tournament is assigned the status of *NotTerminated*. When one of the reasons for termination further appears, the tournament is going irreversibly to the corresponding one of four alternative statuses of termination.
 
 The status of *LackOfPlayers* is assigned when after registration deadline passed the number of players appears less than predefined minimum number of players. The due check is performed while executed `withdraw` function called by the organizer.
 
@@ -44,8 +44,10 @@ The creator of the contract executes the contract constructor which initializes 
 
 * address of the tournament organizer (`organizer` variable);
 * minimum number of players (`minNumOfPlayers` variable);
-* entrance fee (`entryFee` variable);
+* entrance fee (`entranceFee` variable);
 * the winner's percentage share of the prize fund (`winnerShare` variable);
-* participants registration deadline (`entryEndTime` variable).
+* participants registration deadline (`deadline` variable).
+
+Herewith `organizer` variable is initialized by the address of the constructor's caller, and other variables are initialized by values of the same-name input parameters. Further registration deadline can be changed by the organizer only once, other variables are not subject to change.
 
 
