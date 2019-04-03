@@ -134,7 +134,7 @@ contract Tournament_TR {
         // Введённый входной код должен быть уникальным среди входных кодов игроков
         require(
             whoseEntranceCode[_entranceCode] == address(0),
-            "The code you entered is already used"
+            "The code you have entered is already used"
         );
 
         // Продвигаем вперёд счётчик числа его входов
