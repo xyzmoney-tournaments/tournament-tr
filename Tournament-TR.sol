@@ -202,7 +202,7 @@ contract Tournament_TR {
     {
         require(
             now >= deadline + 24 hours,
-            "The winner is announcing too early"
+            "The winner is announced too early"
         );
         require(
             entranceCounters[_winner] > 0,
