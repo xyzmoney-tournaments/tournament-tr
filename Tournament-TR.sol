@@ -107,7 +107,7 @@ contract Tournament_TR {
         );
         require(
             msg.value == _amount,
-            "The amount you deposit is not equal to the required entrance fee"
+            "The amount you deposit is not equal to the entrance fee"
         );
         require(
             _entranceCode >= 1000000000000000 && _entranceCode <= 9999999999999999,
