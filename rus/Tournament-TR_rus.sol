@@ -337,7 +337,7 @@ contract Tournament_TR {
         // Забрать свои взносы могут только игроки, не сделавшие этого ранее
         require(
             _entriesCounter % 10 == 0,
-            "You have already refund"
+            "You have already refunded"
         );
         // Забрать свой взнос можно, только если турнир находится
         // в одном из статусов LackOfPlayers, Cancelled или NoWinner
