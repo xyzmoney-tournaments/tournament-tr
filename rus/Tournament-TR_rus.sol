@@ -124,7 +124,7 @@ contract Tournament_TR {
         // Вносимая сумма должна быть точно равна размеру вступительного взноса
         require(
             msg.value == _amount,
-            "The amount you deposit is not equal to the required entrance fee"
+            "The amount you deposit is not equal to the entrance fee"
         );
         // Введённый входной код должен быть 16-значным числом
         require(
