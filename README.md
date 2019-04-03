@@ -1,6 +1,6 @@
 # Smart contract Tournament-TR
 
-The contract is written in the Solidity language and intended for implementation on Ethereum. It contains function set for collecting and distribution of prize fund of a game tournament. The type of a game does not matter. The tournament should be organized as follows: the prize fund is the sum of fixed entrance fees of players, the one winner receives the predefined share of the prize fund, the rest of the funds is taken away by the tournament organizer.
+The contract is written in the Solidity language and intended for implementation on Ethereum. It contains a function set for collecting and distribution of prize fund of a game tournament. The type of a game does not matter. The tournament should be organized as follows: the prize fund is the sum of fixed entrance fees of players, the one winner receives the predefined share of the prize fund, the rest of the funds is taken away by the tournament organizer.
 
 **The contract contains functions of:**
 
@@ -34,7 +34,7 @@ The status of *Winner* is assigned during execution of `announceWinner` function
 
 Both registration deadline (entryEndTime variable) and `now` property which is used in the contract code as the current time have [Unix time](https://en.wikipedia.org/wiki/Unix_time) format which is the number of seconds that have elapsed since 00:00:00, 1 January 1970, Coordinated Universal Time (UTC).
 
-It should be noted that `now` does not give current astronomical time. It is just alias of `block.timestamp` ⏤ the current block timestamp. Therefore the "current" time is defined in the contract with some share of uncertainty. In the description of the [Solidity language](https://solidity.readthedocs.io/en/v0.5.6/units-and-global-variables.html#index-2) it is noted:
+It should be noted that `now` does not represent current astronomical time. It is just alias of `block.timestamp` ⏤ the current block timestamp. Therefore the "current" time is defined in the contract with some share of uncertainty. In the description of the [Solidity language](https://solidity.readthedocs.io/en/v0.5.6/units-and-global-variables.html#index-2) it is noted:
 
 >The current block timestamp must be strictly larger than the timestamp of the last block, but the only guarantee is that it will be somewhere between the timestamps of two consecutive blocks in the canonical chain.
 
@@ -128,7 +128,7 @@ Such complex informativness is reached by that the counter has the sign: if the 
 * share of the winner;
 * the registration deadline.
 
-**`onEnter`** ⏤ is called after each enter into the tournament (see the description of `enter` function). With this event the following parameters are logged:
+**`onEntrance`** ⏤ is called after each entrance into the tournament (see the description of `enter` function). With this event the following parameters are logged:
 
 * the participant's address;
 * the participant's entrance code;
@@ -141,7 +141,7 @@ Such complex informativness is reached by that the counter has the sign: if the 
 
 **`onDeadlineChange`** ⏤ is generated after change of the registration deadline (see the description of `changeDeadline` function). With this event the new value of the deadline is logged.
 
-**`onWinnerAnnounce`** ⏤ is called after storing the winner address into `winner` variable (see the description of `announceWinner` function). With this event the winner address is logged.
+**`onWinnerAnnouncement`** ⏤ is called after storing the winner address into `winner` variable (see the description of `announceWinner` function). With this event the winner address is logged.
 
 **`onPrizePayment`** ⏤ is xalled after the winner took away his prize (see the description of `takePrize` function). With this event the following parameters are logged:
 
@@ -152,7 +152,7 @@ Such complex informativness is reached by that the counter has the sign: if the 
 
 **`onRefund`** ⏤ is called after each refund in case of the tournament termination with no winner announced (see the description of `refund` function). With this event the address of the player who has refunded is logged.
 
-**`onWithdraw`** ⏤ is called after each withdrawal from the contract balance by the organizer (see the description of `withdraw` function). With this event the withdrawal amount is logged.
+**`onWithdrawal`** ⏤ is called after each withdrawal from the contract balance by the organizer (see the description of `withdraw` function). With this event the withdrawal amount is logged.
 
 ## Functions
 
@@ -224,7 +224,7 @@ There is no input parameters.
 * deletes the participant's  entrance code from `whoseEntryCode` mapping;
 * decreases `playersCounter` by 1;
 * decreases `prizeFund` by the entrance fee amount;
-* calls `onUnregister` event;
+* calls `onUnregistering` event;
 * transfers the entrance fee amount to the participant's address;
 * updates `contractBalance`.
 
@@ -275,7 +275,7 @@ There is no input parameters.
 * updates `availableFunds`;
 * stores the input argument into `winner`;
 * set `status` to *Winner*;
-* calls `onWinnerAnnounce` event.
+* calls `onWinnerAnnouncement` event.
 
 ### `terminate`
 
@@ -366,6 +366,6 @@ There is no input parameters.
   * returns;
 * if the reqested amount is non-zero and it does not exceed `availableFunds` then the function:
   * reduces `availableFunds` by the requested amount;
-  * calls `onWithdraw` event;
+  * calls `onWithdrawal` event;
   * transfers the required amount to the organizer's address;
   * updates `contractBalance`.
