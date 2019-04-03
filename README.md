@@ -1,6 +1,6 @@
 # Smart contract Tournament-TR
 
-The contract is written in the Solidity and intended for implementation on Ethereum. It contains a function set for collecting and distribution of prize fund of a game tournament. The type of a game does not matter. The tournament should be organized as follows: the prize fund is the sum of fixed entrance fees of players, the one winner receives the predefined share of the prize fund, the rest of the funds is taken away by the tournament organizer.
+The contract is written in Solidity and intended for implementation on Ethereum. It contains a function set for collecting and distribution of prize fund of a game tournament. The type of a game does not matter. The tournament should be organized as follows: the prize fund is the sum of fixed entrance fees of players, the one winner receives the predefined share of the prize fund, the rest of the funds is taken away by the tournament organizer.
 
 **The contract contains functions of:**
 
