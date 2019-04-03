@@ -273,7 +273,7 @@ contract Tournament_TR {
         );
         require(
             _entranceCounter % 10 == 0,
-            "You have already refund"
+            "You have already refunded"
         );
         require(
             _status == statuses.LackOfPlayers ||
