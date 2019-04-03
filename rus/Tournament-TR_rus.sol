@@ -252,7 +252,7 @@ contract Tournament_TR {
         // после завершения приёма взносов
         require(
             now >= deadline + 24 hours,
-            "The winner is announcing too early"
+            "The winner is announced too early"
         );
         // Победитель может быть только из числа игроков
         require(
