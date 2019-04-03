@@ -1,16 +1,16 @@
 pragma solidity ^0.5.0 <0.6.0;
 
-contract Tournament-TR {
+contract Tournament {
 
     address public organizer; // Адрес организатора турнира
     address public winner; // Адрес победителя турнира
     uint public minNumOfPlayers; // Минимальное количество игроков
     uint public playersCounter; // Счётчик игроков
     uint public entrantsCounter; // Счётчик участников (в том числе вышедших)
-    uint public entryFee; // Вступительный взнос в Wei (1 Ether = 10^18 Wei)
+    uint public entranceFee; // Вступительный взнос в Wei (1 Ether = 10^18 Wei)
     uint public prizeFund; // Призовой фонд в Wei
     uint public winnerShare; // Доля победителя (в процентах от призового фонда)
-    uint public entryEndTime; // Время окончания приёма взносов (Unix time)
+    uint public deadline; // Время окончания приёма взносов (Unix time)
     uint public contractBalance; // Баланс контракта
     uint public availableFunds; // Сумма, доступная организатору для снятия
     // Перечень возможных статусов завершения турнира:
@@ -20,54 +20,54 @@ contract Tournament-TR {
     // Текущий статус турнира (начальный статус: NotTerminated)
     statuses public status;
     // Признак изменения времени окончания приёма взносов
-    bool public entryEndTimeIsChanged;
+    bool public deadlineIsChanged;
     bool public prizeIsPaid; // Признак выплаты приза
 
     // Список адресов участников турнира (в том числе вышедших)
     address[] public entrantsList;
     // Соответствие <адрес участника> => <входной код участника>
-    mapping (address => uint) public entrantEntryCode;
+    mapping (address => uint) public entryCodes;
     // Соответствие <адрес участника> => <счётчик числа входов участника>
-    mapping (address => int) public entrantEntriesCounter;
+    mapping (address => int) public entriesCounters;
     // Соответствие <входной код участника> => <адрес участника>
     mapping (uint => address) public whoseEntryCode;
 
     // Событие создания контракта
     event onCreation(
-        uint minNumOfPlayers, uint entryFee, uint winnerShare, uint entryEndTime
+        uint minNumOfPlayers, uint entranceFee, uint winnerShare, uint deadline
     );
     // Событие входа в турнир
-    event onEnter(address entrantAddress, uint entryCode, int entriesCounter);
+    event onEntrance(address entrantAddress, uint entryCode, int entriesCounter);
     // Событие выхода из турнира
-    event onLeaving(address entrantAddress, int entriesCounter);
+    event onUnregistering(address entrantAddress, int entriesCounter);
     // Событие изменения времени окончания приёма взносов
-    event onEntryEndTimeChange(uint newEntryEndTime);
+    event onDeadlineChange(uint newDeadline);
     // Событие объявления победителя
-    event onWinnerAnnounce(address winnerAddress);
+    event onWinnerAnnouncement(address winnerAddress);
     // Событие выплаты приза победителю
     event onPrizePayment(address winnerAddress, uint amount);
     // Событие завершения турнира с одним из статусов завершения:
     // LackOfPlayers, Cancelled или NoWinner
     event onTermination(statuses status);
     // Событие возврата взноса игроку при завершении турнира без победителя
-    event onMoneyBack(address playerAddress);
+    event onRefund(address playerAddress);
     // Событие снятия суммы с баланса турнира организатором
-    event onWithdraw(uint amount);
+    event onWithdrawal(uint amount);
 
 
     constructor (
         uint _minNumOfPlayers,
-        uint _entryFee,
+        uint _entranceFee,
         uint _winnerShare,
-        uint _entryEndTime
+        uint _deadline
     ) public {
         organizer = msg.sender; // Организатор турнира = создатель контракта
         minNumOfPlayers = _minNumOfPlayers;
-        entryFee = _entryFee;
+        entranceFee = _entranceFee;
         winnerShare = _winnerShare;
-        entryEndTime = _entryEndTime;
+        deadline = _deadline;
         // Возбуждаем событие создания контракта
-        emit onCreation(_minNumOfPlayers, _entryFee, _winnerShare, _entryEndTime);
+        emit onCreation(_minNumOfPlayers, _entranceFee, _winnerShare, _deadline);
     }
 
     // Модификатор для функций, выполнять которые уполномочен только организатор
@@ -106,15 +106,15 @@ contract Tournament-TR {
         checkTermination
     {
         // Счётчик числа входов лица, вызвавшего функцию
-        int _entriesCounter = entrantEntriesCounter[msg.sender];
+        int _entriesCounter = entriesCounters[msg.sender];
         // Размер вступительного взноса
-        uint _amount = entryFee;
+        uint _amount = entranceFee;
 
         // Если до этого функция не откатилась по одному из статусов завершения,
         // то войти в турнир можно только до истечения времени приёма взносов
         require(
-            now < entryEndTime,
-            "Time to enter the tournament has passed"
+            now < deadline,
+            "Time to enter into the tournament has passed"
         );
         // Участник не может повторно войти в турнир, уже числясь игроком
         require(
@@ -124,7 +124,7 @@ contract Tournament-TR {
         // Вносимая сумма должна быть точно равна размеру вступительного взноса
         require(
             msg.value == _amount,
-            "The amount you deposit is not equal to the required entry fee"
+            "The amount you deposit is not equal to the required entrance fee"
         );
         // Введённый входной код должен быть 16-значным числом
         require(
@@ -140,9 +140,9 @@ contract Tournament-TR {
         // Продвигаем вперёд счётчик числа его входов
         _entriesCounter = 10 - _entriesCounter;
         // Сохраняем новое значение счётчика числа входов
-        entrantEntriesCounter[msg.sender] = _entriesCounter;
+        entriesCounters[msg.sender] = _entriesCounter;
         // Сохраняем новый входной код
-        entrantEntryCode[msg.sender] = _entryCode;
+        entryCodes[msg.sender] = _entryCode;
         // Фиксируем, что входной код введён данным участником
         whoseEntryCode[_entryCode] = msg.sender;
         // Если данный участник первый раз вошёл в турнир
@@ -155,25 +155,25 @@ contract Tournament-TR {
         // Увеличиваем призовой фонд на величину вступительного взноса
         prizeFund += _amount;
         // Возбуждаем событие входа в турнир
-        emit onEnter(msg.sender, _entryCode, _entriesCounter);
+        emit onEntrance(msg.sender, _entryCode, _entriesCounter);
         contractBalance = address(this).balance; // Обновляем баланс контракта
     }
 
-    /// leave отдаёт вступительные взносы игрокам, желающим покинуть турнир
-    function leave()
+    /// unregister отдаёт вступительные взносы игрокам, желающим покинуть турнир
+    function unregister()
         public
         checkTermination
     {
         // Счётчик числа входов лица, вызвавшего функцию
-        int _entriesCounter = entrantEntriesCounter[msg.sender];
+        int _entriesCounter = entriesCounters[msg.sender];
         // Размер вступительного взноса
-        uint _amount = entryFee;
+        uint _amount = entranceFee;
 
         // Если до этого функция не откатилась по одному из статусов завершения,
         // то выйти из турнира можно только до истечения времени приёма взносов
         require(
-            now < entryEndTime,
-            "Time to leave the tournament has passed"
+            now < deadline,
+            "Time to unregister for the tournament has passed"
         );
         // Выйти из турнира может только игрок
         require(
@@ -185,60 +185,60 @@ contract Tournament-TR {
         // инвертируем счётчик числа его входов
         _entriesCounter = -_entriesCounter;
         // Сохраняем новое значение счётчика числа входов
-        entrantEntriesCounter[msg.sender] = _entriesCounter;
+        entriesCounters[msg.sender] = _entriesCounter;
         // Фиксируем, что входной код, ранее введённый данным участником,
         // освободился для повторного ввода
-        whoseEntryCode[entrantEntryCode[msg.sender]] = address(0);
+        whoseEntryCode[entryCodes[msg.sender]] = address(0);
         playersCounter--; // Декрементируем счётчик числа игроков
         // Уменьшаем призовой фонд на величину вступительного взноса
         prizeFund -= _amount;
         // Возбуждаем событие выхода из турнира
-        emit onLeaving(msg.sender, _entriesCounter);
+        emit onUnregistering(msg.sender, _entriesCounter);
         msg.sender.transfer(_amount); // Возвращаем взнос участнику
         contractBalance = address(this).balance; // Обновляем баланс контракта
     }
 
-    /// changeEntryEndTime меняет время окончания приёма взносов
-    function changeEntryEndTime(uint _newEntryEndTime)
+    /// changeDeadline меняет время окончания приёма взносов
+    function changeDeadline(uint _newDeadline)
         public
         byOrganizerOnly
         checkTermination
     {
         // Первоначальное время окончания приёма взносов
-        uint _oldEntryEndTime = entryEndTime;
+        uint _oldDeadline = deadline;
 
         // Если до этого функция не откатилась по одному из статусов завершения,
         // то изменить время приёма взносов можно только до его истечения
         require(
-            now < _oldEntryEndTime,
-            "Time to change the entry end time has passed"
+            now < _oldDeadline,
+            "Time to change the deadline has passed"
         );
         // Время окончания приёма взносов можно изменить только один раз
         require(
-            !entryEndTimeIsChanged,
-            "Entry end time has already been changed"
+            !deadlineIsChanged,
+            "The deadline has already been changed"
         );
         // Новое время окончания приёма взносов должно отличаться от нынешнего
         require(
-            _newEntryEndTime != _oldEntryEndTime,
-            "New entry end time is equal to the current one"
+            _newDeadline != _oldDeadline,
+            "New deadline is equal to the current one"
         );
         // Время окончания приёма взносов может быть сдвинуто:
         // или вперёд не более чем на 72 часа,
         // или назад с таким расчётом, чтобы от текущего времени до нового
         // момента окончания приёма взносов был запас не менее 24 часов
         require(
-            (_newEntryEndTime > _oldEntryEndTime &&
-            _newEntryEndTime <= _oldEntryEndTime + 72 hours) ||
-            (_newEntryEndTime < _oldEntryEndTime &&
-            _newEntryEndTime >= now + 24 hours),
-            "New entry end time is out of allowable limits"
+            (_newDeadline > _oldDeadline &&
+            _newDeadline <= _oldDeadline + 72 hours) ||
+            (_newDeadline < _oldDeadline &&
+            _newDeadline >= now + 24 hours),
+            "New deadline is out of allowable limits"
         );
 
-        entryEndTime = _newEntryEndTime;
-        entryEndTimeIsChanged = true;
+        deadline = _newDeadline;
+        deadlineIsChanged = true;
         // Возбуждаем событие изменения времени окончания приёма взносов
-        emit onEntryEndTimeChange(_newEntryEndTime);
+        emit onDeadlineChange(_newDeadline);
     }
 
     /// announceWinner сообщает контракту адрес победителя,
@@ -251,12 +251,12 @@ contract Tournament-TR {
         // Победитель может быть объявлен не ранее чем через 24 ч
         // после завершения приёма взносов
         require(
-            now >= entryEndTime + 24 hours,
+            now >= deadline + 24 hours,
             "The winner is announcing too early"
         );
         // Победитель может быть только из числа игроков
         require(
-            entrantEntriesCounter[_winner] > 0,
+            entriesCounters[_winner] > 0,
             "The winner is not in the list of players"
         );
 
@@ -267,7 +267,7 @@ contract Tournament-TR {
         winner = _winner;
         status = statuses.Winner;
         // Возбуждаем событие объявления победителя
-        emit onWinnerAnnounce(_winner);
+        emit onWinnerAnnouncement(_winner);
     }
 
     /// terminate присваивает турниру статус Cancelled или NoWinner
@@ -304,7 +304,7 @@ contract Tournament-TR {
         // Забрать приз может только победитель
         require(
             msg.sender == winner,
-            "You are not the winner of this tournament"
+            "You are not the winner"
         );
         // Приз выплачивается только один раз
         require(
@@ -319,25 +319,25 @@ contract Tournament-TR {
         contractBalance = address(this).balance; // Обновляем баланс контракта
     }
 
-    /// takeMoneyBack возвращает игрокам взносы, если турнир находится
+    /// refund возвращает игрокам взносы, если турнир находится
     /// в одном из статусов LackOfPlayers, Cancelled или NoWinner
-    function takeMoneyBack()
+    function refund()
         public
     {
         // Счётчик числа входов лица, вызвавшего функцию
-        int _entriesCounter = entrantEntriesCounter[msg.sender];
+        int _entriesCounter = entriesCounters[msg.sender];
         statuses _status = status; // Текущий статус турнира
-        uint _amount = entryFee; // Возвращаемая сумма
+        uint _amount = entranceFee; // Возвращаемая сумма
         
         // Забрать свои взносы могут только игроки
         require(
             _entriesCounter > 0,
-            "You are not a player of this tournament"
+            "You are not a player of the tournament"
         );
         // Забрать свои взносы могут только игроки, не сделавшие этого ранее
         require(
             _entriesCounter % 10 == 0,
-            "You have already taken your money"
+            "You have already refund"
         );
         // Забрать свой взнос можно, только если турнир находится
         // в одном из статусов LackOfPlayers, Cancelled или NoWinner
@@ -345,14 +345,14 @@ contract Tournament-TR {
             _status == statuses.LackOfPlayers ||
             _status == statuses.Cancelled ||
             _status == statuses.NoWinner,
-            "You can take your money back only if the tournament terminated with no winner"
+            "You can refund only if the tournament terminated with no winner"
         );
         // Устанавливаем признак возврата взноса игроку
         _entriesCounter++;
         // Сохраняем новое значение счётчика числа входов
-        entrantEntriesCounter[msg.sender] = _entriesCounter;
+        entriesCounters[msg.sender] = _entriesCounter;
         // Возбуждаем событие возврата взноса игроку
-        emit onMoneyBack(msg.sender);
+        emit onRefund(msg.sender);
         msg.sender.transfer(_amount); // Переводим взнос игроку
         contractBalance = address(this).balance; // Обновляем баланс контракта
     }
@@ -370,7 +370,7 @@ contract Tournament-TR {
 
         // Если время приёма взносов прошло, статус турнира - NotTerminated
         // и при этом число игроков меньше минимального количества игроков
-        if (now >= entryEndTime &&
+        if (now >= deadline &&
             _status == statuses.NotTerminated &&
             playersCounter < minNumOfPlayers) {
             // Устанавливаем статус LackOfPlayers
@@ -385,7 +385,7 @@ contract Tournament-TR {
             // Уменьшаем доступный остаток на переводимую сумму
             _availableFunds -= amount;
             // Возбуждаем событие снятия суммы с баланса турнира организатором
-            emit onWithdraw(amount);
+            emit onWithdrawal(amount);
             msg.sender.transfer(amount); // Переводим сумму организатору
             contractBalance = address(this).balance; // Обновляем баланс контракта
             availableFunds = _availableFunds; // Обновляем доступный остаток
