@@ -368,7 +368,7 @@ There is no input parameters.
 
 **The fuction does:**
 
-* if the registration deadline passed, current status is *NotTerminated*, and `playersCounter` is less than `minNumOfPlayers` then the function:
+* if the registration deadline passed, and current status is *NotTerminated*, and `playersCounter` is less than `minNumOfPlayers` then the function:
   * sets status to *LackOfPlayers*;
   * calls `onTermination` event;
   * returns;
