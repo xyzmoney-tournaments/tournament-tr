@@ -156,9 +156,28 @@ Such complex informativness is reached by that the counter has the sign: if the 
 
 ## Functions
 
+### `constructor`
+
+**Main purpose:**
+
+* initializes the contract constants
+
+**Input parameters:**
+
+* minimum number of players;
+* amount of the entrance fee;
+* share of the winner;
+* the registration deadline.
+
+**The fuction does:**
+
+* stores the address of the constructor's caller into `organizer`;
+* stores the four input parameters into the same-name variables;
+* calls `onCreation` event.
+
 ### `enter`
 
-**Purpose:**
+**Main purpose:**
 
 * accepts entrance fees from the persons wishing to enter (re-enter) into the tournament.
 
@@ -187,7 +206,7 @@ Such complex informativness is reached by that the counter has the sign: if the 
 
 ### `unregister`
 
-**Purpose:**
+**Main purpose:**
 
 * transfers the entrance fee amount to the participant's address and excludes him (her) from the list of players.
 
@@ -211,7 +230,7 @@ There is no input parameters.
 
 ### `changeDeadline`
 
-**Purpose:**
+**Main purpose:**
 
 * changes the registration deadline.
 
@@ -236,7 +255,7 @@ There is no input parameters.
 
 ### `announceWinner`
 
-**Purpose:**
+**Main purpose:**
 
 * reports the winner address to the contract and assignes the tournament with the status of *Winner*.
 
@@ -260,7 +279,7 @@ There is no input parameters.
 
 ### `terminate`
 
-**Purpose:**
+**Main purpose:**
 
 * assignes the tournament with one of the statuses *Cancelled* or *NoWinner*.
 
@@ -281,7 +300,7 @@ There is no input parameters.
 
 ### `takePrize`
 
-**Purpose:**
+**Main purpose:**
 
 * tranfers to the winner his or her share of the prize fund.
 
@@ -306,7 +325,7 @@ There is no input parameters.
 
 ### `refund`
 
-**Purpose:**
+**Main purpose:**
 
 * transters to players their entrance fees if the tournament has the status of *LackOfPlayers*, *Cancelled* or *NoWinner*.
 
@@ -327,7 +346,7 @@ There is no input parameters.
 
 ### `withdraw`
 
-**Purpose:**
+**Main purpose:**
 
 * assigns the torunament with the status *LackOfPlayers* if appropriate, or transfers the requested amount to the organizer if the amount is non-zero and it does not exceed the available funds.
 
