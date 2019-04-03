@@ -7,7 +7,7 @@ The contract is written in the Solidity language and intended for implementation
 * control of the tournament statuses;
 * entering (re-entering) into the tournament;
 * unregistering for the tournament with full refund;
-* postponement of entrants registration deadline;
+* shift of participants registration deadline;
 * withdrawal of prize amount by the winner;
 * withdrawal of balance of the tournament by its organizer after the winner announcement, minus the winner share;
 * full refund to players in case the tournament has been terminated with no winner announced.
