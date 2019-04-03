@@ -216,7 +216,7 @@ contract Tournament_TR {
     }
 
     /// terminate assignes the tournament with one of the statuses
-    /// Cancelled and NoWinner
+    /// Cancelled or NoWinner
     function terminate(statuses newStatus)
         public
         byOrganizerOnly
@@ -259,7 +259,7 @@ contract Tournament_TR {
     }
 
     /// refund lets the players take away their entrance fees if the tournament
-    /// has one of the statuses LackOfPlayers, Cancelled and NoWinner
+    /// has one of the statuses LackOfPlayers, Cancelled or NoWinner
     function refund()
         public
     {
