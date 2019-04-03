@@ -32,7 +32,7 @@ The status of *Winner* is assigned during execution of `announceWinner` function
 
 ## About time representation in the contract
 
-Both registration deadline (entryEndTime variable) and `now` property which is used in the contract code as the current time have [Unix time](https://en.wikipedia.org/wiki/Unix_time) format which is the number of seconds that have elapsed since 00:00:00, 1 January 1970, Coordinated Universal Time (UTC).
+Both registration deadline (`deadline` variable) and `now` property which is used in the contract code as the current time have [Unix time](https://en.wikipedia.org/wiki/Unix_time) format which is the number of seconds that have elapsed since 00:00:00, 1 January 1970, Coordinated Universal Time (UTC).
 
 It should be noted that `now` does not represent current astronomical time. It is just alias of `block.timestamp` ⏤ the current block timestamp. Therefore the "current" time is defined in the contract with some share of uncertainty. In the description of the [Solidity language](https://solidity.readthedocs.io/en/v0.5.6/units-and-global-variables.html#index-2) it is noted:
 
@@ -76,6 +76,8 @@ From the moment the tournament got the status of *Winner*, the winner can take a
 
 **`playersCounter`** ⏤ counter of players. Players are participants who enter into the tournament and does not unregister for it until the registration deadline.
 
+**`entrantsCounter`** ⏤ counter of entrants.
+
 **`entranceFee`** ⏤ the amount of the entrance fee in Wei (1 Ether = 10^18 Wei). It is initialized during execution of the contract constructor.
 
 **`prizeFund`** ⏤ the amount of the prize fund in Wei. It is equal to the sum of all entrance fees of players.
@@ -117,7 +119,7 @@ Counter of entrances allows to define:
 
 Such complex informativness is reached by that the counter has the sign: if the counter value is positive then the entrant is among the players of the tournament, else if it is negative then the entrant has unregistered for the tournament. The counter's step is 10. At the first entrance of the participant his (her) counter becomes 10. If after that the participant unregistered for the tournament, the counter inverts its sign. If then the participant enter again, the counter becomes 20, and so on. To put it briefly, at consequent entrances and unregisterings the counter will change in the following sequence: 10, -10, 20, -20, 30, … . If the tournament has terminated with no winner announced and the player has refund after that, his or her counter of entrances increases by 1 in addition.
 
-**`whoseEntryCode`** ⏤ mapping <entrant's entrance code> => <entrant's address>. It is used for fast checking of the entered code ⏤ the new code should not be present among the entrance codes of players (at the same time presence of the code among entrance codes of participants who already has unregistered is allowed). On the participant's unregistering his or her entrance code is removed from the mapping thus releasing this code for new enter.
+**`whoseEntranceCode`** ⏤ mapping <entrant's entrance code> => <entrant's address>. It is used for fast checking of the entered code ⏤ the new code should not be present among the entrance codes of players (at the same time presence of the code among entrance codes of participants who already has unregistered is allowed). On the participant's unregistering his or her entrance code is removed from the mapping thus releasing this code for new enter.
 
 ## Events
 
@@ -196,9 +198,15 @@ Such complex informativness is reached by that the counter has the sign: if the 
 
 **The fuction does:**
 
-* if the participant enters into the tournament for the first time then the function sets his (her) counter of entrances to 10 and adds his (her) address to the list of entrants, else the function advances the counter forward;
+* calculates new value of the participant's entrances counter by formula:
+
+    _entranceCounter = 10 - _entranceCounter
+
+* if the participant enters for the first time then his (her) entrances counter becomes 10, and so the function:
+  * adds the participant's address to the list of entrants;
+  * increases `entrantsCounter` by 1;
 * adds the participant's entrance code to `entranceCodes` mapping;
-* adds the participant's address to `whoseEntryCode` mapping;
+* adds the participant's address to `whoseEntranceCode` mapping;
 * increases `playersCounter` by 1;
 * increases `prizeFund` by the entrance fee amount;
 * calls `onEnter` event;
@@ -221,7 +229,7 @@ There is no input parameters.
 **The fuction does:**
 
 * inverts the sign of the participant's counter of entrances;
-* deletes the participant's  entrance code from `whoseEntryCode` mapping;
+* deletes the participant's  entrance code from `whoseEntranceCode` mapping;
 * decreases `playersCounter` by 1;
 * decreases `prizeFund` by the entrance fee amount;
 * calls `onUnregistering` event;
