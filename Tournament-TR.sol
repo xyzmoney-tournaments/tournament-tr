@@ -26,20 +26,20 @@ contract Tournament {
     // Список адресов участников турнира (в том числе вышедших)
     address[] public entrantsList;
     // Соответствие <адрес участника> => <входной код участника>
-    mapping (address => uint) public entryCodes;
+    mapping (address => uint) public entranceCodes;
     // Соответствие <адрес участника> => <счётчик числа входов участника>
-    mapping (address => int) public entriesCounters;
+    mapping (address => int) public entrancesCounters;
     // Соответствие <входной код участника> => <адрес участника>
-    mapping (uint => address) public whoseEntryCode;
+    mapping (uint => address) public whoseEntranceCode;
 
     // Событие создания контракта
     event onCreation(
         uint minNumOfPlayers, uint entranceFee, uint winnerShare, uint deadline
     );
     // Событие входа в турнир
-    event onEntrance(address entrantAddress, uint entryCode, int entriesCounter);
+    event onEntrance(address entrantAddress, uint entranceCode, int entrancesCounter);
     // Событие выхода из турнира
-    event onUnregistering(address entrantAddress, int entriesCounter);
+    event onUnregistering(address entrantAddress, int entrancesCounter);
     // Событие изменения времени окончания приёма взносов
     event onDeadlineChange(uint newDeadline);
     // Событие объявления победителя
@@ -100,13 +100,13 @@ contract Tournament {
     }
 
     /// enter принимает вступительные взносы от желающих стать игроками
-    function enter(uint _entryCode)
+    function enter(uint _entranceCode)
         public
         payable
         checkTermination
     {
         // Счётчик числа входов лица, вызвавшего функцию
-        int _entriesCounter = entriesCounters[msg.sender];
+        int _entriesCounter = entrancesCounters[msg.sender];
         // Размер вступительного взноса
         uint _amount = entranceFee;
 
@@ -128,23 +128,23 @@ contract Tournament {
         );
         // Введённый входной код должен быть 16-значным числом
         require(
-            _entryCode >= 1000000000000000 && _entryCode <= 9999999999999999,
-            "The entry code must be a 16-digit number"
+            _entranceCode >= 1000000000000000 && _entranceCode <= 9999999999999999,
+            "The entrance code must be a 16-digit number"
         );
         // Введённый входной код должен быть уникальным среди входных кодов игроков
         require(
-            whoseEntryCode[_entryCode] == address(0),
+            whoseEntranceCode[_entranceCode] == address(0),
             "The code you entered is already used"
         );
 
         // Продвигаем вперёд счётчик числа его входов
         _entriesCounter = 10 - _entriesCounter;
         // Сохраняем новое значение счётчика числа входов
-        entriesCounters[msg.sender] = _entriesCounter;
+        entrancesCounters[msg.sender] = _entriesCounter;
         // Сохраняем новый входной код
-        entryCodes[msg.sender] = _entryCode;
+        entranceCodes[msg.sender] = _entranceCode;
         // Фиксируем, что входной код введён данным участником
-        whoseEntryCode[_entryCode] = msg.sender;
+        whoseEntranceCode[_entranceCode] = msg.sender;
         // Если данный участник первый раз вошёл в турнир
         if (_entriesCounter == 10) {
             entrantsCounter++; // Инкрементируем счётчик участников
@@ -155,7 +155,7 @@ contract Tournament {
         // Увеличиваем призовой фонд на величину вступительного взноса
         prizeFund += _amount;
         // Возбуждаем событие входа в турнир
-        emit onEntrance(msg.sender, _entryCode, _entriesCounter);
+        emit onEntrance(msg.sender, _entranceCode, _entriesCounter);
         contractBalance = address(this).balance; // Обновляем баланс контракта
     }
 
@@ -165,7 +165,7 @@ contract Tournament {
         checkTermination
     {
         // Счётчик числа входов лица, вызвавшего функцию
-        int _entriesCounter = entriesCounters[msg.sender];
+        int _entriesCounter = entrancesCounters[msg.sender];
         // Размер вступительного взноса
         uint _amount = entranceFee;
 
@@ -185,10 +185,10 @@ contract Tournament {
         // инвертируем счётчик числа его входов
         _entriesCounter = -_entriesCounter;
         // Сохраняем новое значение счётчика числа входов
-        entriesCounters[msg.sender] = _entriesCounter;
+        entrancesCounters[msg.sender] = _entriesCounter;
         // Фиксируем, что входной код, ранее введённый данным участником,
         // освободился для повторного ввода
-        whoseEntryCode[entryCodes[msg.sender]] = address(0);
+        whoseEntranceCode[entranceCodes[msg.sender]] = address(0);
         playersCounter--; // Декрементируем счётчик числа игроков
         // Уменьшаем призовой фонд на величину вступительного взноса
         prizeFund -= _amount;
@@ -256,7 +256,7 @@ contract Tournament {
         );
         // Победитель может быть только из числа игроков
         require(
-            entriesCounters[_winner] > 0,
+            entrancesCounters[_winner] > 0,
             "The winner is not in the list of players"
         );
 
@@ -325,7 +325,7 @@ contract Tournament {
         public
     {
         // Счётчик числа входов лица, вызвавшего функцию
-        int _entriesCounter = entriesCounters[msg.sender];
+        int _entriesCounter = entrancesCounters[msg.sender];
         statuses _status = status; // Текущий статус турнира
         uint _amount = entranceFee; // Возвращаемая сумма
         
@@ -350,7 +350,7 @@ contract Tournament {
         // Устанавливаем признак возврата взноса игроку
         _entriesCounter++;
         // Сохраняем новое значение счётчика числа входов
-        entriesCounters[msg.sender] = _entriesCounter;
+        entrancesCounters[msg.sender] = _entriesCounter;
         // Возбуждаем событие возврата взноса игроку
         emit onRefund(msg.sender);
         msg.sender.transfer(_amount); // Переводим взнос игроку
