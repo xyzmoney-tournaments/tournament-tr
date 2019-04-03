@@ -190,8 +190,8 @@ Such complex informativness is reached by that the counter has the sign: if the 
 * current status of the tournament must be *NotTerminated*;
 * one can enter only while the registration deadline not passed;
 * the entering person's address should not be in the list of players (i.e. either this person enters for the first time or he or she should unregister before this entering);
-* the deposit amount should be precisely equal to the entrance fee;
-* the entrance code should be 16-digit number;
+* the deposit amount should be strictly equal to the entrance fee;
+* the entrance code should be a 16-digit number;
 * the entrance code should be unique among entrance codes of players.
 
 **The fuction does:**
