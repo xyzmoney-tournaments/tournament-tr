@@ -115,7 +115,7 @@ contract Tournament_TR {
         );
         require(
             whoseEntranceCode[_entranceCode] == address(0),
-            "The code you entered is already used"
+            "The code you have entered is already used"
         );
 
         _entranceCounter = 10 - _entranceCounter;
