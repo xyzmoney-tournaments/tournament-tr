@@ -84,9 +84,9 @@ From the moment the tournament got the status *Winner*, the winner can take away
 
 **`buyIn`** ⏤ the buy-in amount in Wei (1 Ether = 10^18 Wei). It is initialized during execution of the contract constructor.
 
-**`prize`** ⏤ the prize amount in Wei. It is equal to the sum of all buy-ins multiplied to the value of `winnerShare` variable.
-
 **`winnerShare`** ⏤ the winner's percentage share of the sum of all buy-ins. It is initialized during execution of the contract constructor.
+
+**`prize`** ⏤ the prize amount in Wei. It is equal to the sum of all buy-ins multiplied to the value of `winnerShare` variable.
 
 **`deadline`** ⏤ the registration deadline in Unix time format. It is initialized during execution of the contract constructor. Afterwards it can be changed, but only once.
 
