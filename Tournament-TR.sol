@@ -2,14 +2,14 @@ pragma solidity ^0.5.0 <0.6.0;
 
 contract Tournament_TR {
 
-    address public organizer; // Aaddress of the organizer
+    address public organizer; // Address of the organizer
     address public winner; // Address of the winner
     uint public minNumOfPlayers; // Minimal number of players
     uint public playersCounter; // Counter of players
-    uint public entrantsCounter; // Entrants counter
-    uint public entranceFee; // Entrance fee in Wei (1 Ether = 10^18 Wei)
-    uint public prizeFund; // Prize fund in Wei
-    uint public winnerShare; // The winner's percentage share of the prize fund
+    uint public entrantsCounter; // Counter of entrants
+    uint public buyIn; // The buy-in amount in Wei (1 Ether = 10^18 Wei)
+    uint public prize; // The prize amount in Wei
+    uint public winnerShare; // The winner's share in percents
     uint public deadline; // Participants registration dedaline in Unix time format
     uint public contractBalance; // The balance of the contract
     uint public availableFunds; // Amount available to the organizer for withdrawal
@@ -30,7 +30,7 @@ contract Tournament_TR {
 
     // The event of the contract creation
     event onCreation(
-        uint minNumOfPlayers, uint entranceFee, uint winnerShare, uint deadline
+        uint minNumOfPlayers, uint buyIn, uint winnerShare, uint deadline
     );
     // Entrance event
     event onEntrance(address entrantAddress, uint entranceCode, int entrancesCounter);
@@ -53,16 +53,16 @@ contract Tournament_TR {
 
     constructor (
         uint _minNumOfPlayers,
-        uint _entranceFee,
+        uint _buyIn,
         uint _winnerShare,
         uint _deadline
     ) public {
-        organizer = msg.sender; // The organizer = the tournament's creator
+        organizer = msg.sender; // The organizer = the contract creator
         minNumOfPlayers = _minNumOfPlayers;
-        entranceFee = _entranceFee;
+        buyIn = _buyIn;
         winnerShare = _winnerShare;
         deadline = _deadline;
-        emit onCreation(_minNumOfPlayers, _entranceFee, _winnerShare, _deadline);
+        emit onCreation(_minNumOfPlayers, _buyIn, _winnerShare, _deadline);
     }
 
     modifier byOrganizerOnly() {
@@ -95,7 +95,6 @@ contract Tournament_TR {
         checkTermination
     {
         int _entranceCounter = entranceCounters[msg.sender];
-        uint _amount = entranceFee;
 
         require(
             now < deadline,
@@ -106,7 +105,7 @@ contract Tournament_TR {
             "You are already in the list of players"
         );
         require(
-            msg.value == _amount,
+            msg.value == buyIn,
             "The amount you deposit is not equal to the entrance fee"
         );
         require(
@@ -127,9 +126,9 @@ contract Tournament_TR {
             entrantsList.push(msg.sender);
         }
         playersCounter++;
-        prizeFund += _amount;
         emit onEntrance(msg.sender, _entranceCode, _entranceCounter);
         contractBalance = address(this).balance;
+        prize = contractBalance * winnerShare / 100;
     }
 
     /// unregister lets participants to unregister for the tournament
@@ -139,7 +138,6 @@ contract Tournament_TR {
         checkTermination
     {
         int _entranceCounter = entranceCounters[msg.sender];
-        uint _amount = entranceFee;
 
         require(
             now < deadline,
@@ -154,10 +152,10 @@ contract Tournament_TR {
         entranceCounters[msg.sender] = _entranceCounter;
         whoseEntranceCode[entranceCodes[msg.sender]] = address(0);
         playersCounter--;
-        prizeFund -= _amount;
         emit onUnregistering(msg.sender, _entranceCounter);
-        msg.sender.transfer(_amount);
+        msg.sender.transfer(buyIn);
         contractBalance = address(this).balance;
+        prize = contractBalance * winnerShare / 100;
     }
 
     /// changeDeadline shifts the registration deadline
@@ -209,7 +207,7 @@ contract Tournament_TR {
             "The winner is not in the list of players"
         );
 
-        availableFunds = address(this).balance - prizeFund * winnerShare / 100;
+        availableFunds = address(this).balance - prize;
         winner = _winner;
         status = statuses.Winner;
         emit onWinnerAnnouncement(_winner);
@@ -236,7 +234,7 @@ contract Tournament_TR {
     function takePrize()
         public
     {
-        uint _prize = prizeFund * winnerShare / 100;
+        uint _prize = prize;
         // In Solidity, division rounds towards zero
 
         require(
@@ -265,7 +263,6 @@ contract Tournament_TR {
     {
         int _entranceCounter = entranceCounters[msg.sender];
         statuses _status = status;
-        uint _amount = entranceFee;
         
         require(
             _entranceCounter > 0,
@@ -284,7 +281,7 @@ contract Tournament_TR {
         _entranceCounter++;
         entranceCounters[msg.sender] = _entranceCounter;
         emit onRefund(msg.sender);
-        msg.sender.transfer(_amount);
+        msg.sender.transfer(buyIn);
         contractBalance = address(this).balance;
     }
 
