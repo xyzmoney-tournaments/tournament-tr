@@ -7,7 +7,6 @@ The contract is written in Solidity and intended for implementation on Ethereum.
 * the one winner gets the prize entirely, the remaining amount of the contract balance is intended to cover the expenses of the tournament organizer.
 
 **The contract contains functions of:**
-
 * control of the tournament statuses;
 * entering (re-entering) into the tournament;
 * unregistering for the tournament with full refund;
@@ -19,7 +18,6 @@ The contract is written in Solidity and intended for implementation on Ethereum.
 ## Statuses of the tournament
 
 **The tournament can have one of the following statuses:**
-
 * *NotTerminated* ⏤ the tournament is not complete (proceeds);
 * *LackOfPlayers* ⏤ the tournament is terminated due to lack of players;
 * *Cancelled* ⏤ the tournament is cancelled;
@@ -45,7 +43,6 @@ It should be noted that `now` does not represent current astronomical time. It i
 ## Typical scheme of the contract implementation
 
 By creating the contract, the tournament organizer initializes the following parameters through the contract constructor:
-
 * address of the organizer (`organizer` variable);
 * minimum number of players (`minNumOfPlayers` variable);
 * buy-in amount (`buyIn` variable);
@@ -95,7 +92,6 @@ From the moment the tournament got the status *Winner*, the winner can take away
 **`availableFunds`** ⏤ the part of the contract account balance which is available to the organizer for withdrawal.
 
 **`status`** ⏤ current status of the tournament. Can accept one of the following values:
-
 * *NotTerminated* ⏤ the tournament is not complete (proceeds);
 * *LackOfPlayers* ⏤ the tournament is terminated due to lack of players;
 * *Cancelled* ⏤ the tournament is cancelled;
@@ -115,7 +111,6 @@ Initial status of the tournament ⏤ *NotTerminated*.
 **`entranceCounters`** ⏤ mapping <entrant's address> => <entrant's counter of entrances>.
 
 Counter of entrances allows to define:
-
 * how many times this entrant entered into the tournament;
 * whether the entrant is a player at the moment or he (she) has unregistered for the tournament;
 * whether the player has refunded if the tournament has terminated with no winner announced.
@@ -127,20 +122,17 @@ Such complex informativness is reached by that the counter has the sign: if the 
 ## Events
 
 **`onCreation`** ⏤ is called during execution of the contract constructor. With this event the following parameters are logged:
-
 * minimum number of players;
 * the buy-in amount;
 * the winner share;
 * the registration deadline.
 
 **`onEntrance`** ⏤ is called after each entrance into the tournament (see the description of `enter` function). With this event the following parameters are logged:
-
 * the participant's address;
 * the participant's entrance code;
 * the participant's entrances counter after this enter.
 
 **`onUnregistering`** ⏤ is called after each unregistrating for the tournament (see the description of `unregister` function). With this event the following parameters are logged:
-
 * the participant's address;
 * the participant's entrances counter after this unregistering.
 
@@ -149,7 +141,6 @@ Such complex informativness is reached by that the counter has the sign: if the 
 **`onWinnerAnnouncement`** ⏤ is called after storing the winner address into `winner` variable (see the description of `announceWinner` function). With this event the winner address is logged.
 
 **`onPrizePayment`** ⏤ is called after the winner took away his prize (see the description of `takePrize` function). With this event the following parameters are logged:
-
 * the address of the player who took away the prize;
 * the prize amount.
 
