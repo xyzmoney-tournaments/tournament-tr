@@ -8,8 +8,8 @@ contract Tournament_TR {
     uint public playersCounter; // Counter of players
     uint public entrantsCounter; // Counter of entrants
     uint public buyIn; // The buy-in amount in Wei (1 Ether = 10^18 Wei)
-    uint public prize; // The prize amount in Wei
     uint public winnerShare; // The winner's share in percents
+    uint public prize; // The prize amount in Wei
     uint public deadline; // Participants registration dedaline in Unix time format
     uint public contractBalance; // The balance of the contract
     uint public availableFunds; // Amount available to the organizer for withdrawal
