@@ -1,6 +1,10 @@
 # Smart contract Tournament-TR
 
-The contract is written in Solidity and intended for implementation on Ethereum. It contains a function set for collecting and distribution of prize fund of a game tournament. The type of a game does not matter. The tournament should be organized as follows: the prize fund is the sum of fixed entrance fees of players, the one winner receives the predefined share of the prize fund, the rest of the funds is taken away by the tournament organizer.
+The contract is written in Solidity and intended for implementation on Ethereum. It contains a function set for accumulating and payout of the prize amount of a game tournament. The type of a game does not matter. The tournament should be organized as follows:
+* to enter into the tournament, every participant makes a fixed up-front payment, otherwise known as the "buy-in";
+* the contract balance is equal to the sum of all buy-ins;
+* the prize amount is the predefined share of the contract balance and it is finally determined after the participants registration is closed;
+* the one winner gets the prize entirely, the remaining amount of the contract balance is intended to cover the expenses of the tournament organizer.
 
 **The contract contains functions of:**
 
@@ -24,7 +28,7 @@ The contract is written in Solidity and intended for implementation on Ethereum.
 
 During the contract creation the tournament is assigned with the status *NotTerminated*. When one of the reasons for termination further appears, the tournament is going irreversibly to the corresponding one of four alternative statuses of termination.
 
-The status *LackOfPlayers* is assigned when after registration deadline passed the number of players appears less than predefined minimum number of players. The due check is performed while executed `withdraw` function called by the organizer.
+The status *LackOfPlayers* is assigned in case the number of players appears less than predefined minimum number of players after registration deadline passed. The due check is performed while executed `withdraw` function called by the organizer.
 
 Any of the statuses *Cancelled* and *NoWinner* is assigned by the organizer by calling of `terminate` function. The function can be executed even before the registration deadline passed, with immediate effect of entering (re-entering) and unregistering stop.
 
@@ -40,29 +44,29 @@ It should be noted that `now` does not represent current astronomical time. It i
 
 ## Typical scheme of the contract implementation
 
-The creator of the contract executes the contract constructor which initializes the following parameters:
+By creating the contract, the tournament organizer initializes the following parameters through the contract constructor:
 
-* address of the tournament organizer (`organizer` variable);
+* address of the organizer (`organizer` variable);
 * minimum number of players (`minNumOfPlayers` variable);
-* entrance fee (`entranceFee` variable);
-* the winner's percentage share of the prize fund (`winnerShare` variable);
+* buy-in amount (`buyIn` variable);
+* the winner's percentage share of the contract balance (`winnerShare` variable);
 * participants registration deadline (`deadline` variable).
 
-Herewith `organizer` variable is initialized by the address of the constructor's caller, and other variables are initialized by values of the same-name input parameters. Subsequently, registration deadline can be changed by the organizer only once, other variables are not subject to change.
+Herewith `organizer` variable is initialized by the address of the contract creator, and other variables are initialized by values of the same-name input parameters. Subsequently, registration deadline can be changed by the organizer only once, values of the other variables are not subject to change.
 
-Before the registration starts, the organizer generates a set of tables with unique entrance codes and then distributes these tables among agents that invite participants. If the organizer invites participants directly, he or she uses one of the tables, like the agents. By inviting a participant, an agent provides him or her with one of the available entrance codes. The code given to the participant cannot be re-given to another one, but the participant has the right to use it again while re-entering into the tournament.
+Before the registration starts, the organizer generates a set of tables with unique entrance codes and then distributes these tables among agents that invite participants. If the organizer invites participants directly, he or she uses one of the tables, like the agents. By inviting a participant, an agent provides him or her with one of the available entrance codes. Each code is permitted to be supplied to a participant only once, whereas all the participants have the right to re-use their codes repeatedly while re-entering into the tournament.
 
-To enter the tournament, a participant calls `enter` function, specifying the entrance fee amount (`entranceFee` variable) and the entrance code received from the organizer or from an agent. One can enter into the tournament only while the registration deadline not passed, as long as the tournament has the status *NotTerminated* (the organizer can terminate the tournament before the deadline if there are grounds for that). Also the participants who has been unregistered for the tournament, can re-enter into it. The person who entered is considered further a player. Besides, if there is his or her first enter into the tournament, then the address of this person is also added into the list of entrants.
+To enter the tournament, a participant calls `enter` function, specifying the buy-in amount (`buyIn` variable) and the entrance code received from the organizer or from an agent. One can enter into the tournament only while the registration deadline not passed, as long as the tournament has the status *NotTerminated* (the organizer can terminate the tournament before the deadline if there are grounds for that). Also the participants who has been unregistered for the tournament, can re-enter into it. The person who entered is considered further a player. Besides, if there is his or her first enter into the tournament, then the address of this person is also added into the list of entrants.
 
-To unregister for the tournament, an entrant calls `unregister` function. The unregistering can be performed only by a player and only while the registration deadline not passed, as long as the tournament has the status *NotTerminated*. The function transfers the entrance fee amount to the address of this participant. At the same time the participant is eliminated players, but remains in the list of entrants.
+To unregister for the tournament, an entrant calls `unregister` function. The unregistering can be performed only by a player and only while the registration deadline not passed, as long as the tournament has the status *NotTerminated*. The function transfers the buy-in amount to the address of this participant. Upon his or her unregistering the participant is out of the game, but remains in the list of entrants.
 
 If necessary the organizer can reassign the registration deadline by shifting it either forward no more than to 72 hours, or backward so there are not less than 24 hours between present time and the new deadline. Such reassignment is possible if the tournament is not terminated yet.
 
-If after the registration deadline passed the number of players (`playersCounter` variable) appears less minimum number of players (`minNumOfPlayers` variable), then the next call of `withdraw` function assignes the tournament with the status *LackOfPlayers* (if the tournament was not terminated before by `terminate` function). Both the functions call only by the organizer.
+If the number of players (`playersCounter` variable) appears less minimum number of players (`minNumOfPlayers` variable) after the registration deadline passed, then the next call of `withdraw` function assignes the tournament with the status *LackOfPlayers* (if the tournament was not terminated before by `terminate` function). Both the functions are called only by the organizer.
 
-If after the registration deadline passed the number of players appears not less minimum number of players, the tournament is considered begun. To terminate the tournament, the organizer should either announce the winner by calling of `announceWinner` function (therefore the tournament is automatically assigned with the status *Winner*), or to terminate the tournament with no winner announced by calling `terminate` function with explicit assignment the tournament with one of the statuses *Cancelled* or *NoWinner*. The choice of the status is maid by the organizer depending on the reason of the winner absence. It is possible to terminate the tournament by the winner announcement not earlier than in 24 hours after the registration deadline passed. As opposed to it, it is possible to terminate the tournament with no winner announced even before the deadline.
+If, on the contrary, the number of players appears not less minimum number of players after the deadline passed, the tournament is considered begun. To terminate the tournament, the organizer should either announce the winner by calling of `announceWinner` function (therefore the tournament is automatically assigned with the status *Winner*), or to terminate the tournament with no winner announced by calling `terminate` function with explicit assignment the tournament with one of the statuses *Cancelled* or *NoWinner*. The choice of the status is made by the organizer depending on the reason of the winner absence. It is possible to terminate the tournament by the winner announcement not earlier than in 24 hours after the registration deadline passed. As opposed to it, it is possible to terminate the tournament with no winner announced even before the deadline.
 
-If the tournament has been terminated with no winner announced (i.e. with one of the statuses *LackOfPlayers*, *Cancelled* or *NoWinner*), then all players can refund by calling of `refund` function.
+If the tournament has been terminated with no winner announced (i.e. with one of the statuses *LackOfPlayers*, *Cancelled* or *NoWinner*), then all players can get repayment by calling of `refund` function.
 
 From the moment the tournament got the status *Winner*, the winner can take away the prize by calling `takePrize` function which transfers the prize amount to the winner address. From the same moment the organizer can take away available funds (`availableFunds` variable) from the contract account by calling of `withdraw` function. Available funds are equal to the contract balance (`contractBalance` variable) provided that the winner took away the prize, otherwise the available funds will be reduced by the prize amount.
 
@@ -78,14 +82,13 @@ From the moment the tournament got the status *Winner*, the winner can take away
 
 **`entrantsCounter`** ⏤ counter of entrants.
 
-**`entranceFee`** ⏤ the amount of the entrance fee in Wei (1 Ether = 10^18 Wei). It is initialized during execution of the contract constructor.
+**`buyIn`** ⏤ the buy-in amount in Wei (1 Ether = 10^18 Wei). It is initialized during execution of the contract constructor.
 
-**`prizeFund`** ⏤ the amount of the prize fund in Wei. It is equal to the sum of all entrance fees of players.
+**`prize`** ⏤ the prize amount in Wei. It is equal to the sum of all buy-ins multiplied to the value of `winnerShare` variable.
 
-**`winnerShare`** ⏤ the winner's percentage share of the prize fund. It is initialized during execution of the contract.
+**`winnerShare`** ⏤ the winner's percentage share of the sum of all buy-ins. It is initialized during execution of the contract constructor.
 
-**`deadline`** ⏤ the registration deadline in Unix time format. It is initialized during execution of the contract constructor.
-Afterwards it can be changed, but only once.
+**`deadline`** ⏤ the registration deadline in Unix time format. It is initialized during execution of the contract constructor. Afterwards it can be changed, but only once.
 
 **`contractBalance`** ⏤ the balance of the contract.
 
@@ -101,7 +104,7 @@ Afterwards it can be changed, but only once.
 
 Initial status of the tournament ⏤ *NotTerminated*.
 
-**`deadlineIsChanged`** ⏤ boolean variable. Its value is *true* if the registration deadline was reassigned (such reassignment can be maid only once).
+**`deadlineIsChanged`** ⏤ boolean variable. Its value is *true* if the registration deadline was reassigned (such reassignment can be made only once).
 
 **`prizeIsPaid`** ⏤ boolean variable. Its value is *true* if the winner has taken his prize.
 
@@ -123,32 +126,32 @@ Such complex informativness is reached by that the counter has the sign: if the 
 
 ## Events
 
-**`onCreation`** ⏤ is called during creation of the contract. With this event the following parameters are logged:
+**`onCreation`** ⏤ is called during execution of the contract constructor. With this event the following parameters are logged:
 
 * minimum number of players;
-* amount of the entrance fee;
-* share of the winner;
+* the buy-in amount;
+* the winner share;
 * the registration deadline.
 
 **`onEntrance`** ⏤ is called after each entrance into the tournament (see the description of `enter` function). With this event the following parameters are logged:
 
 * the participant's address;
 * the participant's entrance code;
-* the participant's counter of entrances after this enter.
+* the participant's entrances counter after this enter.
 
 **`onUnregistering`** ⏤ is called after each unregistrating for the tournament (see the description of `unregister` function). With this event the following parameters are logged:
 
 * the participant's address;
-* the participant's counter of entrances after this unregistering.
+* the participant's entrances counter after this unregistering.
 
 **`onDeadlineChange`** ⏤ is generated after change of the registration deadline (see the description of `changeDeadline` function). With this event the new value of the deadline is logged.
 
 **`onWinnerAnnouncement`** ⏤ is called after storing the winner address into `winner` variable (see the description of `announceWinner` function). With this event the winner address is logged.
 
-**`onPrizePayment`** ⏤ is xalled after the winner took away his prize (see the description of `takePrize` function). With this event the following parameters are logged:
+**`onPrizePayment`** ⏤ is called after the winner took away his prize (see the description of `takePrize` function). With this event the following parameters are logged:
 
 * the address of the player who took away the prize;
-* amount of the prize.
+* the prize amount.
 
 **`onTermination`** ⏤ is called after the tournament has been assigned with one of the statuses *LackOfPlayers*, *Cancelled* or *NoWinner*. The status *LackOfPlayers* can be assigned in `withdraw` function, the statuses *Cancelled* and *NoWinner* ⏤ in `terminate` function. With this event the new status of the tournament is logged.
 
@@ -161,43 +164,36 @@ Such complex informativness is reached by that the counter has the sign: if the 
 ### `constructor`
 
 **Main purpose:**
-
-* initializes the contract constants
+* initializes some variables of the contract
 
 **Input parameters:**
-
 * minimum number of players;
-* amount of the entrance fee;
+* amount of the buy-in;
 * share of the winner;
 * the registration deadline.
 
-**The fuction does:**
-
-* stores the address of the constructor's caller into `organizer`;
+**The function does:**
+* stores the address of the contract creator into `organizer`;
 * stores the four input parameters into the same-name variables;
 * calls `onCreation` event.
 
 ### `enter`
 
 **Main purpose:**
-
-* accepts entrance fees from the persons wishing to enter (re-enter) into the tournament.
+* accepts buy-ins from the persons wishing to enter (re-enter) into the tournament.
 
 **Input parameter:**
-
 * entrance code provided from the organizer or from an agent.
 
 **Requirements:**
-
 * current status of the tournament must be *NotTerminated*;
 * one can enter only while the registration deadline not passed;
-* the entering person's address should not be in the list of players (i.e. either this person enters for the first time or he or she should unregister before this entering);
-* the deposit amount should be strictly equal to the entrance fee;
-* the entrance code should be a 16-digit number;
-* the entrance code should be unique among entrance codes of players.
+* the entering person's address must not be in the list of players (i.e. either this person enters for the first time or he or she should unregister before this entering);
+* the deposit amount must be strictly equal to the buy-in amount;
+* the entrance code must be a 16-digit number;
+* the entrance code must be unique among entrance codes of players.
 
-**The fuction does:**
-
+**The function does:**
 * calculates new value of the participant's entrances counter by formula:
 
     _entranceCounter = 10 - _entranceCounter
@@ -208,46 +204,40 @@ Such complex informativness is reached by that the counter has the sign: if the 
 * adds the participant's entrance code to `entranceCodes` mapping;
 * adds the participant's address to `whoseEntranceCode` mapping;
 * increases `playersCounter` by 1;
-* increases `prizeFund` by the entrance fee amount;
 * calls `onEnter` event;
-* updates `contractBalance`.
+* updates `contractBalance`;
+* recalculates `prize`.
 
 ### `unregister`
 
 **Main purpose:**
-
-* transfers the entrance fee amount to the participant's address and excludes him (her) from the list of players.
+* transfers the buy-in amount to the participant's address and excludes him (her) from the list of players.
 
 There is no input parameters.
 
 **Requirements:**
-
 * current status of the tournament must be *NotTerminated*;
 * one can unregister only while the registration deadline not passed;
-* the unregistering person's address should be in the list of players.
+* the unregistering person's address must be in the list of players.
 
-**The fuction does:**
-
+**The function does:**
 * inverts the sign of the participant's counter of entrances;
 * deletes the participant's  entrance code from `whoseEntranceCode` mapping;
 * decreases `playersCounter` by 1;
-* decreases `prizeFund` by the entrance fee amount;
 * calls `onUnregistering` event;
-* transfers the entrance fee amount to the participant's address;
-* updates `contractBalance`.
+* transfers the buy-in amount to the participant's address;
+* updates `contractBalance`;
+* recalculates `prize`.
 
 ### `changeDeadline`
 
 **Main purpose:**
-
 * changes the registration deadline.
 
 **Input parameter:**
-
 * new value of the deadline.
 
 **Requirements:**
-
 * only the organizer is authorized to perform the function;
 * current status of the tournament must be *NotTerminated*;
 * it is allowed to execute the function only while the registration deadline not passed;
@@ -255,77 +245,61 @@ There is no input parameters.
 * current value of the deadline must differ from the new one;
 * the deadline can be shifted either forward no more than for 72 hours, or backward so there are not less than 24 hours between present time and the new deadline.
 
-**The fuction does:**
-
+**The function does:**
 * stores the input argument into `deadline`;
-* set `deadlineIsChanged` to *true*;
+* sets `deadlineIsChanged` to *true*;
 * calls `onDeadlineChange` event.
 
 ### `announceWinner`
 
 **Main purpose:**
-
 * reports the winner address to the contract and assignes the tournament with the status of *Winner*.
 
 **Input parameter:**
-
 * the winner address.
 
 **Requirements:**
-
 * only the organizer is authorized to perform the function;
 * current status of the tournament must be *NotTerminated*;
 * the winner can be announced not earlier than in 24 hours after the registration deadline passed;
 * the winner must be one of the players.
 
-**The fuction does:**
-
+**The function does:**
 * updates `availableFunds`;
 * stores the input argument into `winner`;
-* set `status` to *Winner*;
+* sets `status` to *Winner*;
 * calls `onWinnerAnnouncement` event.
 
 ### `terminate`
 
 **Main purpose:**
-
 * assignes the tournament with one of the statuses *Cancelled* or *NoWinner*.
 
 **Input parameter:**
-
 * the new status.
 
 **Requirements:**
-
 * only the organizer is authorized to perform the function;
 * current status of the tournament must be *NotTerminated*;
 * the new status must be *Cancelled* or *NoWinner*.
 
-**The fuction does:**
-
+**The function does:**
 * stores the input argument into `status`;
 * calls `onTermination` event.
 
 ### `takePrize`
 
 **Main purpose:**
-
-* tranfers to the winner his or her share of the prize fund.
+* tranfers to the winner his or her share of the prize pool.
 
 There is no input parameters.
 
 **Requirements:**
-
 * current status of the tournament must be *Winner*;
 * only the winner can take away the prize;
 * the prize is paid only once (`prizeIsPaid` variable must be equal to *false*).
 
-**The fuction does:**
-
-* calculates the prize amount by the formula:
-
-    _prize = prizeFund * winnerShare / 100
-
+**The function does:**
 * sets `prizeIsPaid` to *true*;
 * calls `onPrizePayment` event;
 * transfers the prize amount to the winner's address;
@@ -334,40 +308,33 @@ There is no input parameters.
 ### `refund`
 
 **Main purpose:**
-
-* transters to players their entrance fees if the tournament has the status of *LackOfPlayers*, *Cancelled* or *NoWinner*.
+* transters to players their buy-ins if the tournament has the status of *LackOfPlayers*, *Cancelled* or *NoWinner*.
 
 There is no input parameters.
 
 **Requirements:**
-
 * only the players can refund;
-* only the players can refund who did not make it earlier (the player's counter of entrances must be a multiple of 10);
+* only those players can refund who did not make it earlier (such players' counters of entrances must be a multiple of 10);
 * current status of the tournament must be one of *LackOfPlayers*, *Cancelled* or *NoWinner*.
 
-**The fuction does:**
-
+**The function does:**
 * increases the player's counter of entrances by 1;
 * calls `onRefund` event;
-* transfers the enreance fee to the player's address;
+* transfers the buy-in amount to the player's address;
 * updates `contractBalance`.
 
 ### `withdraw`
 
 **Main purpose:**
-
 * assigns the torunament with the status *LackOfPlayers* if appropriate, or transfers the requested amount to the organizer if the amount is non-zero and it does not exceed the available funds.
 
 **Input parameter:**
-
 * withdrawal amount.
 
 **Requirements:**
-
 * only the organizer is authorized to perform the function.
 
-**The fuction does:**
-
+**The function does:**
 * if the registration deadline passed, and current status is *NotTerminated*, and `playersCounter` is less than `minNumOfPlayers` then the function:
   * sets status to *LackOfPlayers*;
   * calls `onTermination` event;
