@@ -69,7 +69,7 @@ From the moment the tournament got the status *Winner*, the winner can take away
 
 ## Contract variables
 
-**`organizer`** ⏤ address of the organizer. It is is initialized by the address of the constructor's caller during execution of the contract constructor.
+**`organizer`** ⏤ address of the organizer. It is set by the address of the contract creator during execution of the contract constructor.
 
 **`winner`** ⏤ address of the winner. It is assigned by the organizer at the end of the game in case of winner determination.
 
@@ -79,13 +79,13 @@ From the moment the tournament got the status *Winner*, the winner can take away
 
 **`entrantsCounter`** ⏤ counter of entrants.
 
-**`buyIn`** ⏤ the buy-in amount in Wei (1 Ether = 10^18 Wei). It is initialized during execution of the contract constructor.
+**`buyIn`** ⏤ the buy-in amount in Wei (1 Ether = 10^18 Wei). It is set during execution of the contract constructor.
 
-**`winnerShare`** ⏤ the winner's percentage share of the sum of all buy-ins. It is initialized during execution of the contract constructor.
+**`winnerShare`** ⏤ the winner's percentage share of the sum of all buy-ins. It is set during execution of the contract constructor.
 
 **`prize`** ⏤ the prize amount in Wei. It is equal to the sum of all buy-ins multiplied to the value of `winnerShare` variable.
 
-**`deadline`** ⏤ the registration deadline in Unix time format. It is initialized during execution of the contract constructor. Afterwards it can be changed, but only once.
+**`deadline`** ⏤ the registration deadline in Unix time format. It is set during execution of the contract constructor. Afterwards it can be changed, but only once.
 
 **`contractBalance`** ⏤ the balance of the contract.
 
