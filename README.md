@@ -75,7 +75,7 @@ From the moment the tournament got the status *Winner*, the winner can take away
 
 **`minNumOfPlayers`** ⏤ minimum number of players. If the number of players (variable `playersCounter`) appears less of `minNumOfPlayers` variable after the registration deadline passed, then the tournament automatically get the status *LackOfPlayers*. The `minNumOfPlayers` variable is set during execution of the contract constructor.
 
-**`playersCounter`** ⏤ counter of players. Players are participants who enter into the tournament and does not unregister for it until the registration deadline.
+**`playersCounter`** ⏤ counter of players. Players are participants who enter into the tournament and does not unregister for it until the registration deadline passed.
 
 **`entrantsCounter`** ⏤ counter of entrants.
 
