@@ -49,7 +49,7 @@ By creating the contract, the tournament organizer sets the following parameters
 * the winner's percentage share of the contract balance (`winnerShare` variable);
 * participants registration deadline (`deadline` variable).
 
-Herewith `organizer` variable is set by the address of the contract creator, and other variables are set by values of the same-name input parameters. Subsequently, registration deadline can be changed by the organizer only once, the other variables are not changed further.
+Herewith `organizer` variable is set by the address of the contract creator, and other variables are set by values of the same-name input arguments. Subsequently, registration deadline can be changed by the organizer only once, the other variables are not changed further.
 
 Before the registration starts, the organizer generates a set of tables with unique entrance codes and then distributes these tables among agents that invite participants. If the organizer invites participants directly, he or she uses one of the tables, like the agents. By inviting a participant, an agent provides him or her with one of the available entrance codes. Each code is permitted to be supplied to a participant only once, whereas all the participants have the right to re-use their codes repeatedly while re-entering into the tournament.
 
@@ -121,18 +121,18 @@ Such complex informativeness is reached by that the counter has the sign: if the
 
 ## Events
 
-**`onCreation`** ⏤ is called during execution of the contract constructor (see the description of `constructor` function). With this event the following parameters are logged:
+**`onCreation`** ⏤ is called during execution of the contract constructor (see the description of `constructor` function). With this event the following arguments are logged:
 * minimum number of players;
 * the buy-in amount;
 * the winner share;
 * the registration deadline.
 
-**`onEntrance`** ⏤ is called after each entrance into the tournament (see the description of `enter` function). With this event the following parameters are logged:
+**`onEntrance`** ⏤ is called after each entrance into the tournament (see the description of `enter` function). With this event the following arguments are logged:
 * the participant's address;
 * the participant's entrance code;
 * the participant's entrances counter after this entrance.
 
-**`onUnregistering`** ⏤ is called after each unregistrating for the tournament (see the description of `unregister` function). With this event the following parameters are logged:
+**`onUnregistering`** ⏤ is called after each unregistrating for the tournament (see the description of `unregister` function). With this event the following arguments are logged:
 * the participant's address;
 * the participant's entrances counter after this unregistering.
 
@@ -140,7 +140,7 @@ Such complex informativeness is reached by that the counter has the sign: if the
 
 **`onWinnerAnnouncement`** ⏤ is called after storing the winner address into `winner` variable (see the description of `announceWinner` function). With this event the winner address is logged.
 
-**`onPrizePayment`** ⏤ is called after the winner took away his prize (see the description of `takePrize` function). With this event the following parameters are logged:
+**`onPrizePayment`** ⏤ is called after the winner took away his prize (see the description of `takePrize` function). With this event the following arguments are logged:
 * the address of the player who took away the prize;
 * the prize amount.
 
@@ -165,7 +165,7 @@ Such complex informativeness is reached by that the counter has the sign: if the
 
 **The function does:**
 * stores the address of the contract creator into `organizer`;
-* stores the four input parameters into the same-name variables;
+* stores four input arguments into the same-name variables;
 * calls `onCreation` event.
 
 ### `enter`
