@@ -333,5 +333,5 @@ There is no input parameters.
 * if the requested amount is non-zero and it does not exceed `availableFunds` then the function:
   * reduces `availableFunds` by the requested amount;
   * calls `onWithdrawal` event;
-  * transfers the required amount to the organizer's address;
+  * transfers the requested amount to the organizer's address;
   * updates `contractBalance`.
