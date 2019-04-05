@@ -89,7 +89,7 @@ From the moment the tournament got the status *Winner*, the winner can take away
 
 **`contractBalance`** ⏤ the balance of the contract.
 
-**`availableFunds`** ⏤ the part of the contract account balance which is available to the organizer for withdrawal.
+**`availableFunds`** ⏤ the part of the contract balance which is available to the organizer for withdrawal.
 
 **`status`** ⏤ current status of the tournament. Can accept one of the following values:
 * *NotTerminated* ⏤ the tournament is not complete (proceeds);
