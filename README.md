@@ -12,7 +12,7 @@ The contract is written in Solidity and intended for implementation on Ethereum.
 * unregistering for the tournament with full refund;
 * shift of participants registration deadline;
 * withdrawal of prize amount by the winner;
-* withdrawal of the tournament balance by its organizer after the winner announcement, minus the winner share;
+* withdrawal of the tournament balance by its organizer after the winner announcement, minus the prize amount;
 * full refund to players in case the tournament has been terminated with no winner announced.
 
 ## Statuses of the tournament
