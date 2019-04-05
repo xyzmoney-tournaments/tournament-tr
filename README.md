@@ -18,7 +18,7 @@ The contract is written in Solidity and intended for implementation on Ethereum.
 ## Statuses of the tournament
 
 **The tournament can have one of the following statuses:**
-* *NotTerminated* ⏤ the tournament is not complete (proceeds);
+* *NotTerminated* ⏤ the tournament is not terminated (proceeds);
 * *LackOfPlayers* ⏤ the tournament is terminated due to lack of players;
 * *Cancelled* ⏤ the tournament is cancelled;
 * *NoWinner* ⏤ the tournament is terminated with no winner announced;
