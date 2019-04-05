@@ -4,7 +4,7 @@ The contract is written in Solidity and intended for implementation on Ethereum.
 * to enter into the tournament, every participant makes a fixed up-front payment, otherwise known as the "buy-in";
 * the contract balance is equal to the sum of all buy-ins;
 * the prize amount is the predefined share of the contract balance and it is finally determined after the participants registration is closed;
-* the one winner gets the prize entirely, the remaining amount of the contract balance is intended to cover the expenses of the tournament organizer.
+* the one winner gets the prize entirely, and the remaining amount of the contract balance is intended to cover the expenses of the tournament organizer.
 
 **The contract contains functions of:**
 * control of the tournament statuses;
