@@ -73,7 +73,7 @@ From the moment the tournament got the status *Winner*, the winner can take away
 
 **`winner`** ⏤ address of the winner. It is assigned by the organizer at the end of the game in case of winner determination.
 
-**`minNumOfPlayers`** ⏤ minimum number of players. If after the registration deadline passed the number of players (variable `playersCounter`) appears less of `minNumOfPlayers` variable, the tournament automatically get the status *LackOfPlayers*. The `minNumOfPlayers` variable is set during execution of the contract constructor.
+**`minNumOfPlayers`** ⏤ minimum number of players. If the number of players (variable `playersCounter`) appears less of `minNumOfPlayers` variable after the registration deadline passed, the tournament automatically get the status *LackOfPlayers*. The `minNumOfPlayers` variable is set during execution of the contract constructor.
 
 **`playersCounter`** ⏤ counter of players. Players are participants who enter into the tournament and does not unregister for it until the registration deadline.
 
