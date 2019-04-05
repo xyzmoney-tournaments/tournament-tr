@@ -156,6 +156,7 @@ contract Tournament_TR {
         msg.sender.transfer(buyIn);
         contractBalance = address(this).balance;
         prize = contractBalance * winnerShare / 100;
+            // In Solidity, division rounds towards zero
     }
 
     /// changeDeadline shifts the registration deadline
@@ -235,7 +236,6 @@ contract Tournament_TR {
         public
     {
         uint _prize = prize;
-        // In Solidity, division rounds towards zero
 
         require(
             status == statuses.Winner,
