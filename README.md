@@ -49,7 +49,7 @@ By creating the contract, the tournament organizer sets the following parameters
 * the winner's percentage share of the contract balance (`winnerShare` variable);
 * participants registration deadline (`deadline` variable).
 
-Herewith `organizer` variable is initialized by the address of the contract creator, and other variables are initialized by values of the same-name input parameters. Subsequently, registration deadline can be changed by the organizer only once, the other variables are not changed further.
+Herewith `organizer` variable is set by the address of the contract creator, and other variables are set by values of the same-name input parameters. Subsequently, registration deadline can be changed by the organizer only once, the other variables are not changed further.
 
 Before the registration starts, the organizer generates a set of tables with unique entrance codes and then distributes these tables among agents that invite participants. If the organizer invites participants directly, he or she uses one of the tables, like the agents. By inviting a participant, an agent provides him or her with one of the available entrance codes. Each code is permitted to be supplied to a participant only once, whereas all the participants have the right to re-use their codes repeatedly while re-entering into the tournament.
 
