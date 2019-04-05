@@ -244,7 +244,7 @@ There is no input parameters.
 ### `announceWinner`
 
 **Main purpose:**
-* reports the winner address to the contract and assignes the tournament with the status of *Winner*.
+* reports the winner address to the contract and assignes the tournament with the status *Winner*.
 
 **Input parameter:**
 * the winner address.
