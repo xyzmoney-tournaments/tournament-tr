@@ -130,7 +130,7 @@ Such complex informativeness is reached by that the counter has the sign: if the
 **`onEntrance`** ⏤ is called after each entrance into the tournament (see the description of `enter` function). With this event the following parameters are logged:
 * the participant's address;
 * the participant's entrance code;
-* the participant's entrances counter after this enter.
+* the participant's entrances counter after this entrance.
 
 **`onUnregistering`** ⏤ is called after each unregistrating for the tournament (see the description of `unregister` function). With this event the following parameters are logged:
 * the participant's address;
