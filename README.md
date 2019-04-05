@@ -281,7 +281,7 @@ There is no input parameters.
 ### `takePrize`
 
 **Main purpose:**
-* tranfers to the winner his or her share of the prize pool.
+* tranfers the prize amount to the winner's address.
 
 There is no input parameters.
 
