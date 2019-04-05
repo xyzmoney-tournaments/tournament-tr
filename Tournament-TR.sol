@@ -19,7 +19,7 @@ contract Tournament_TR {
     statuses public status;
     bool public deadlineIsChanged; // True if deadline is changed
     bool public prizeIsPaid; // True if prize is paid to the winner
-    // The list of entrants addresses
+    // The list of entrants' addresses
     address[] public entrantsList;
     // Mapping <entrant's address> => <entrant's entrance code>
     mapping (address => uint) public entranceCodes;
