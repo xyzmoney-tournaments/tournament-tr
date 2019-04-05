@@ -187,7 +187,7 @@ Such complex informativeness is reached by that the counter has the sign: if the
 **The function does:**
 * calculates new value of the participant's entrances counter by formula:
 
-    _entranceCounter = 10 - _entranceCounter
+    _entranceCounter = 10 - _entranceCounter;
 
 * if the participant enters for the first time then his (her) entrances counter becomes 10, and so the function:
   * adds the participant's address to the list of entrants;
