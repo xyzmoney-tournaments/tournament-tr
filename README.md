@@ -121,7 +121,7 @@ Such complex informativness is reached by that the counter has the sign: if the 
 
 ## Events
 
-**`onCreation`** ⏤ is called during execution of the contract constructor. With this event the following parameters are logged:
+**`onCreation`** ⏤ is called during execution of the contract constructor (see the description of `constructor` function). With this event the following parameters are logged:
 * minimum number of players;
 * the buy-in amount;
 * the winner share;
@@ -155,7 +155,7 @@ Such complex informativness is reached by that the counter has the sign: if the 
 ### `constructor`
 
 **Main purpose:**
-* initializes some variables of the contract
+* sets some variables of the contract
 
 **Input parameters:**
 * minimum number of players;
