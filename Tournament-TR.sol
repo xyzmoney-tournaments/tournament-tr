@@ -88,7 +88,7 @@ contract Tournament_TR {
         _;
     }
 
-    /// enter receives participants' buy-ins
+    /// enter receives buy-ins from participants and register them for the tournament
     function enter(uint _entranceCode)
         public
         payable
