@@ -155,7 +155,7 @@ Such complex informativeness is reached by that the counter has the sign: if the
 ### `constructor`
 
 **Main purpose:**
-* sets some variables of the contract
+* sets some variables of the contract.
 
 **Input parameters:**
 * minimum number of players;
