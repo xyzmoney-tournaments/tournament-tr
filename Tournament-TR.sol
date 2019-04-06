@@ -129,6 +129,7 @@ contract Tournament_TR {
         emit onEntrance(msg.sender, _entranceCode, _entranceCounter);
         contractBalance = address(this).balance;
         prize = contractBalance * winnerShare / 100;
+            // In Solidity, division rounds towards zero
     }
 
     /// unregister lets participants to unregister for the tournament
