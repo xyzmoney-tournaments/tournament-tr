@@ -127,8 +127,9 @@ contract Tournament_TR {
         }
         playersCounter++;
         emit onEntrance(msg.sender, _entranceCode, _entranceCounter);
-        contractBalance = address(this).balance;
-        prize = contractBalance * winnerShare / 100;
+        uint _balance = address(this).balance;
+        contractBalance = _balance;
+        prize = _balance * winnerShare / 100;
             // In Solidity, division rounds towards zero
     }
 
@@ -155,8 +156,9 @@ contract Tournament_TR {
         playersCounter--;
         emit onUnregistering(msg.sender, _entranceCounter);
         msg.sender.transfer(buyIn);
-        contractBalance = address(this).balance;
-        prize = contractBalance * winnerShare / 100;
+        uint _balance = address(this).balance;
+        contractBalance = _balance;
+        prize = _balance * winnerShare / 100;
             // In Solidity, division rounds towards zero
     }
 
