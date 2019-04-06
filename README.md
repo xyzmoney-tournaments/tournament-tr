@@ -32,7 +32,7 @@ Any of the statuses *Cancelled* and *NoWinner* is assigned by the organizer by c
 
 The status *Winner* is assigned during execution of `announceWinner` function called by the organizer in order to announce winner.
 
-## About time representation in the contract
+## Time representation in the contract
 
 Both registration deadline (`deadline` variable) and `now` property which is used in the contract code as the current time have [Unix time](https://en.wikipedia.org/wiki/Unix_time) format which is the number of seconds that have elapsed since 00:00:00, 1 January 1970, Coordinated Universal Time (UTC).
 
