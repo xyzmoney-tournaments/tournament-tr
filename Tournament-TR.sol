@@ -203,7 +203,7 @@ contract Tournament_TR {
         checkTermination
     {
         require(
-            now >= deadline + 24 hours,
+            now >= deadline + 19 hours,
             "The winner is announced too early"
         );
         require(
