@@ -106,7 +106,7 @@ contract Tournament_TR {
         );
         require(
             msg.value == buyIn,
-            "The amount you deposit is not equal to the entrance fee"
+            "The amount you deposit is not equal to the buy-in amount"
         );
         require(
             _entranceCode >= 1000000000000000 && _entranceCode <= 9999999999999999,
@@ -259,7 +259,7 @@ contract Tournament_TR {
         contractBalance = address(this).balance;
     }
 
-    /// refund lets the players take away their entrance fees if the tournament
+    /// refund lets the players take away their buy-ins if the tournament
     /// has one of the statuses LackOfPlayers, Cancelled or NoWinner
     function refund()
         public
