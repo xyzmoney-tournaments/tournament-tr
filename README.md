@@ -317,7 +317,7 @@ There is no input parameters.
 ### `withdraw`
 
 **Main purpose:**
-* assigns the torunament with the status *LackOfPlayers* if appropriate, or transfers the requested amount to the organizer if the amount is non-zero and it does not exceed the available funds.
+* assigns the tournament with the status *LackOfPlayers* if appropriate, or transfers the requested amount to the organizer if the amount is non-zero and it does not exceed the available funds.
 
 **Input parameter:**
 * withdrawal amount.
