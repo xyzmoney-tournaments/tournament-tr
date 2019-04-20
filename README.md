@@ -36,7 +36,7 @@ The status *Winner* is assigned during execution of `announceWinner` function ca
 
 Both registration deadline (`deadline` variable) and `now` property which is used in the contract code as the current time have [Unix time](https://en.wikipedia.org/wiki/Unix_time) format which is the number of seconds that have elapsed since 00:00:00, 1 January 1970, Coordinated Universal Time (UTC).
 
-It should be noted that `now` does not represent current astronomical time. It is just alias of `block.timestamp` ⏤ the current block timestamp. Therefore the "current" time is defined in the contract with some share of uncertainty. In the description of the [Solidity language](https://solidity.readthedocs.io/en/v0.5.6/units-and-global-variables.html#index-2) it is noted:
+It should be noted that `now` does not represent current astronomical time. It is just alias of `block.timestamp` ⏤ the current block timestamp. Therefore the "current" time is defined in the contract with some share of uncertainty. It is noted in [Solidity documentation](https://solidity.readthedocs.io/en/v0.5.6/units-and-global-variables.html#index-2):
 
 >The current block timestamp must be strictly larger than the timestamp of the last block, but the only guarantee is that it will be somewhere between the timestamps of two consecutive blocks in the canonical chain.
 
